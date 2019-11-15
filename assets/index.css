@@ -12352,7 +12352,7 @@ padding-top: 50px;
 
 /* ../../blocks/page/_view/page_view_site-contact.post.css:begin */
 .page_view_site-contact {
-    background-image: url('/assets/images/common/bg.jpg');
+    background-image: url('/assets/images/summary/common/main/main_bg.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-color: #39c;
@@ -12484,14 +12484,14 @@ padding-top: 50px;
 .page_view_site-contact .page__faqs .faqs div a:hover {
   color: #28e8fd;
 }
-@media screen and (max-width: 1300px) {
+@media screen and (min-width: 1300px) {
   .page_view_site-contact {
-    background-size: auto;
+    background-size: 100% 100%;
   }
     }
 @media all and (orientation: landscape) {
   .page_view_site-contact {
-    background-size: 100% 100%;
+    background-size: auto 100%;
   }
     }
 
