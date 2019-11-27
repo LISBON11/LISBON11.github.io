@@ -14513,6 +14513,40 @@ $(function() {
 
 }());
 /* end: ../../libs/bem-core/common.blocks/i-bem/__dom/_init/i-bem__dom_init_auto.js */
+/* begin: ../../blocks/nav-menu/nav-menu.browser.js */
+(function(){
+modules.define('nav-menu',
+    ['i-bem__dom', 'next-tick', 'jquery'],
+    function(provide, BEMDOM, nextTick, $) {
+
+provide(BEMDOM.decl(this.name,
+{
+    onSetMod : {
+        js : {
+            inited : function() {
+                this.closeModal = this.closeModal.bind(this);
+                this.submenu = this.findBlockInside('submenu');
+                this.link = this.findBlockInside({blockName: 'link', modName: 'download', modVal: true });
+
+                this.link.on('click', this.openModal, this);
+                this.submenu.elem('close').click(this.closeModal);
+            }
+        }
+    },
+
+    closeModal : function () {
+        this.submenu.delMod('visible');
+    },
+
+    openModal : function () {
+        this.submenu.setMod('visible');
+    }
+}));
+
+});
+
+}());
+/* end: ../../blocks/nav-menu/nav-menu.browser.js */
 /* begin: ../../libs/bem-components/common.blocks/menu/menu.js */
 (function(){
 /**
@@ -15466,23 +15500,23 @@ provide($);
 /*  jQuery Nice Select - v1.1.0
     https://github.com/hernansartorio/jquery-nice-select
     Made by Hernán Sartorio  */
- 
+
 (function($) {
 
   $.fn.niceSelect = function(method) {
-    
+
     // Methods
-    if (typeof method == 'string') {      
+    if (typeof method == 'string') {
       if (method == 'update') {
         this.each(function() {
           var $select = $(this);
           var $dropdown = $(this).next('.nice-select');
           var open = $dropdown.hasClass('open');
-          
+
           if ($dropdown.length) {
             $dropdown.remove();
             create_nice_select($select);
-            
+
             if (open) {
               $select.next().trigger('click');
             }
@@ -15492,7 +15526,7 @@ provide($);
         this.each(function() {
           var $select = $(this);
           var $dropdown = $(this).next('.nice-select');
-          
+
           if ($dropdown.length) {
             $dropdown.remove();
             $select.css('display', '');
@@ -15506,96 +15540,94 @@ provide($);
       }
       return this;
     }
-      
+
     // Hide native select
     this.hide();
-    
+
     // Create custom markup
     this.each(function() {
       var $select = $(this);
-      
+
       if (!$select.next().hasClass('nice-select')) {
         create_nice_select($select);
       }
     });
-    
+
     function create_nice_select($select) {
       $select.after($('<div></div>')
         .addClass('nice-select')
         .addClass($select.attr('class') || '')
         .addClass($select.attr('disabled') ? 'disabled' : '')
         .attr('tabindex', $select.attr('disabled') ? null : '0')
-        .html('<span class="current"></span><ul class="list"></ul>')
+        .html('<span class="current"></span><div class="list"></div>')
       );
-        
+
       var $dropdown = $select.next();
-      var $options = $select.find('option');
-      var $selected = $select.find('option:selected');
-      
+      var $options = $select.find('.option');
+      var $selected = $select.find('.option.selected');
+
       $dropdown.find('.current').html($selected.data('display') || $selected.text());
-      
+      $dropdown.find('.current').attr('icon', $selected.attr('icon'));
+
       $options.each(function(i) {
         var $option = $(this);
         var display = $option.data('display');
 
-        $dropdown.find('ul').append($('<li></li>')
-          .attr('data-value', $option.val())
-          .attr('data-display', (display || null))
-          .addClass('option' +
-            ($option.is(':selected') ? ' selected' : '') +
-            ($option.is(':disabled') ? ' disabled' : ''))
-          .html($option.text())
-        );
+        $option.addClass('option' +
+          ($option.is('.selected') ? ' selected' : '') +
+          ($option.is('.disabled') ? ' disabled' : ''))
+
+        $dropdown.find('.list').append($option);
       });
     }
-    
+
     /* Event listeners */
-    
+
     // Unbind existing events in case that the plugin has been initialized before
     $(document).off('.nice_select');
-    
+
     // Open/close
     $(document).on('click.nice_select', '.nice-select', function(event) {
       var $dropdown = $(this);
-      
+
       $('.nice-select').not($dropdown).removeClass('open');
       $dropdown.toggleClass('open');
-      
+
       if ($dropdown.hasClass('open')) {
-        $dropdown.find('.option');  
+        $dropdown.find('.option');
         $dropdown.find('.focus').removeClass('focus');
         $dropdown.find('.selected').addClass('focus');
       } else {
         $dropdown.focus();
       }
     });
-    
+
     // Close when clicking outside
     $(document).on('click.nice_select', function(event) {
       if ($(event.target).closest('.nice-select').length === 0) {
-        $('.nice-select').removeClass('open').find('.option');  
+        $('.nice-select').removeClass('open').find('.option');
       }
     });
-    
+
     // Option click
     $(document).on('click.nice_select', '.nice-select .option:not(.disabled)', function(event) {
       var $option = $(this);
       var $dropdown = $option.closest('.nice-select');
-      
+
       $dropdown.find('.selected').removeClass('selected');
       $option.addClass('selected');
-      
+
       var text = $option.data('display') || $option.text();
-      $dropdown.find('.current').text(text);
-      
+      //custom
+      // $dropdown.find('.current').text(text).attr('icon', $option.attr('icon'));
       $dropdown.prev('select').val($option.data('value')).trigger('change');
     });
 
     // Keyboard events
-    $(document).on('keydown.nice_select', '.nice-select', function(event) {    
+    $(document).on('keydown.nice_select', '.nice-select', function(event) {
       var $dropdown = $(this);
       var $focused_option = $($dropdown.find('.focus') || $dropdown.find('.list .option.selected'));
-      
+
       // Space or Enter
       if (event.keyCode == 32 || event.keyCode == 13) {
         if ($dropdown.hasClass('open')) {
@@ -15647,13 +15679,14 @@ provide($);
     if (style.pointerEvents !== 'auto') {
       $('html').addClass('no-csspointerevents');
     }
-    
+
     return this;
 
   };
 
 }(jQuery));
 },{}]},{},[1])
+
 }());
 /* end: ../../blocks/jquery/__niceSelect/jquery__niceSelect.source.browser.js */
 /* begin: ../../libs/bem-components/common.blocks/checkbox/checkbox.js */
@@ -26934,6 +26967,7 @@ provide(BEMDOM.decl(this.name,
         'js' : {
             'inited' : function() {
                 this._checkbox = this.findBlockOn(this.elem('checkbox'), 'checkbox');
+                this.currentStamp = new Date();
                 this._checkbox.on(
                     { modName : 'checked', modVal : '*' },
                     this._onCheckboxCheck,
@@ -26944,7 +26978,14 @@ provide(BEMDOM.decl(this.name,
     },
 
     _onCheckboxCheck : function() {
+        // отключает возможность быстро открывать/закрывать модалку
+        if(new Date() - this.currentStamp < 300){
+            this.currentStamp = new Date();
+            return;
+        }
+
         this.toggleMod('checked');
+        this.currentStamp = new Date();
     }
 
 }));
@@ -27784,18 +27825,12 @@ Page.decl({ modName : 'view', modVal : 'site-summary'}, {
                 var self = this;
                 this._headers = this.findBlocksInside('header');
                 this.sections = this.findBlocksInside('section');
-                this.bindTo('go_position_top', 'click', function (e) {
-                    console.log('moveSectionUp', e)
-                    e.preventDefault();
-                    $.fn.fullpage.moveSectionUp();
-                });
 
                 this.bindTo('go', 'click', function (e) {
-                    console.log('moveSectionDown', e)
-                    $.fn.fullpage.moveSectionDown();
+                    $(e.target).closest('.page__go').hasClass('page__go_position_top') ?
+                        $.fn.fullpage.moveSectionUp() :
+                        $.fn.fullpage.moveSectionDown()
                 });
-
-
 
                 this.elem('fullpage').fullpage({
                     onLeave : this._onFPLeave.bind(this),
@@ -28295,6 +28330,8 @@ Page.decl({ modName : 'view', modVal : 'site-download' }, {
                 var USER_AGENT = window.navigator && window.navigator.userAgent || '';
                 var IS_CHROME = USER_AGENT.indexOf("Chrome") > -1;
 
+                console.log('IS_CHROME', IS_CHROME)
+
                 // Opera 8.0+
                 var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
                 // Firefox 1.0+
@@ -28363,8 +28400,11 @@ Page.decl({ modName : 'view', modVal : 'site-download' }, {
                     $img.attr('src', curr);
                 };
 
-                if (isChrome) {
+                if (IS_CHROME) {
+                    var $stepImage2 = $(this.findBlockInside('step_number_2').findBlockInside('step__image').domElem);
+
                     patchImgUrl($stepImg, 'chrome');
+                    patchImgUrl($stepImage2, 'chrome');
                     patchImgUrl($downloadImg, 'chrome');
                     this.setMod('chrome');
                 } else if (isFirefox) {
@@ -28988,9 +29028,7 @@ provide(BEMDOM.decl(this.name,
         var self = this;
         this.setMod('modal', val);
 
-        setTimeout(function () {
-            self.button.setMod('checked', val)
-        }, 300)
+        self.button.setMod('checked', val)
 
     },
 
