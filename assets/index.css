@@ -10451,7 +10451,7 @@ padding-top: 50px;
 }
 .page_view_site-download .page__title {
   font-size: 2.6363636364em;
-  line-height: calc(70 / 22 em);
+  line-height: 3.1818181818em;
   margin-bottom: 20px;
 }
 .page_view_site-download .page__subtitle {
@@ -10462,7 +10462,7 @@ padding-top: 50px;
   color: #3193C5;
 }
 .page_view_site-download .page__info {
-  font-size: calc(18 / 22 em);
+  font-size: 0.8181818182em;
 }
 .page_view_site-download .page__footer {
   font-size: 18px;
