@@ -1209,6 +1209,13 @@ svg > use {
   }
         }
 
+@media screen and (max-width: 1258px) and (min-width: 1241px) {
+    .header__logo {
+        font-size: 43px;
+    }
+}
+
+
 
 @media screen and (max-width: 1200px) {
 
@@ -1584,6 +1591,11 @@ svg > use {
   .footer__menu {
     margin-top: 30px;
   }
+}
+.footer__security {
+  font-size: 16px;
+  text-align: center;
+  margin-top: 30px;
 }
 .footer__menu-item {
   margin-right: 40px;
