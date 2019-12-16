@@ -305,6 +305,9 @@ svg > use {
   padding-bottom: 0;
   padding-top: 0;
 }
+.nav-menu__menu {
+  padding-bottom: 5px;
+}
 .nav-menu__link {
   color: inherit;
   text-decoration: none;
