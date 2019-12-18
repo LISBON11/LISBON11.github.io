@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 34" width="41" height="34">
-	<style>
-		tspan { white-space:pre }
-		.shp0 { fill: none;stroke: #333333;paint-order:stroke fill markers;stroke-linecap:round;stroke-width: 2 } 
-	</style>
-	<path id="TT" fill-rule="evenodd" class="shp0" d="M35.23 16.31C34.75 17.63 33.03 17.17 33.03 17.17L29.97 16.49L29.97 21.64L32.1 22.1L32.1 23.14L28.33 30.86L11.98 26.14L11.87 25.27L13.55 23.41L11.72 13.09L3.85 11.59L3.1 9.32L13.36 2.92C13.36 2.92 37.88 4.14 38.4 4.14C38.92 4.14 38.92 4.46 38.92 4.46L38.92 6.64C38.92 6.64 35.72 14.99 35.23 16.31ZM13.96 4.22L5.79 9.09L30.83 12.54L35.57 4.9L13.96 4.22ZM6.56 14.51L4.08 11.85L29.09 16.3L6.56 14.51ZM26.9 27.26L12.6 23.8L12.89 22.89L26.9 27.26Z" />
-</svg>
