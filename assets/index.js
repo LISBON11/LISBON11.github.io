@@ -15899,6 +15899,72 @@ _close: function() {
 
 }());
 /* end: ../../blocks/sticker/sticker.browser.js */
+/* begin: ../../blocks/video/video.browser.js */
+(function(){
+modules.define('video', ['i-bem__dom', 'youtube-api', 'jquery'], function(provide, BEMDOM, YT, $) {
+
+provide(BEMDOM.decl(this.name, {
+    onSetMod: {
+        js : {
+            'true' : function() {
+                this.bind('click', this._onClick.bind(this));
+            }
+        },
+        loaded: {
+            'true': function() {
+                this.elem('player').attr('src', this.elem('player').attr('data-url'));
+
+                this.__self.liveUnbindFrom('click');
+            },
+
+            '' : function() {
+                this.elem('player').attr('src', '');
+                this.bindTo('click', this._onClick.bind(this));
+            }
+        },
+    },
+    _onClick : function() {
+        this.setMod('loaded');
+    }
+
+}));
+
+});
+
+}());
+/* end: ../../blocks/video/video.browser.js */
+/* begin: ../../blocks/youtube-api/youtube-api.browser.js */
+(function(){
+modules.define('youtube-api', ['loader_type_js'], function(provide, loader) {
+
+    loader(
+        'https://www.youtube.com/iframe_api',
+        function() { provide(YT) });
+
+});
+
+}());
+/* end: ../../blocks/youtube-api/youtube-api.browser.js */
+/* begin: ../../blocks/jquery/__isInViewport/jquery__isInViewport.browser.js */
+(function(){
+/**
+ * @module inputmask
+ */
+modules.define( 'jquery__isInViewport', ['jquery'], function(provide, $) {
+    $.fn.isInViewport = function() {
+        var elementTop = $(this).offset().top;
+        var elementBottom = elementTop + $(this).outerHeight();
+      
+        var viewportTop = $(window).scrollTop();
+        var viewportBottom = viewportTop + $(window).height();
+      
+        return elementBottom > viewportTop && elementTop < viewportBottom;
+      };  
+      provide($);
+})
+
+}());
+/* end: ../../blocks/jquery/__isInViewport/jquery__isInViewport.browser.js */
 /* begin: ../../blocks/swiper/swiper.source.browser.js */
 (function(){
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -20666,52 +20732,6 @@ provide(BEMDOM.decl(this.name,
 
 }());
 /* end: ../../blocks/image-switcher/image-switcher.browser.js */
-/* begin: ../../blocks/video/video.browser.js */
-(function(){
-modules.define('video', ['i-bem__dom', 'youtube-api', 'jquery'], function(provide, BEMDOM, YT, $) {
-
-provide(BEMDOM.decl(this.name, {
-    onSetMod: {
-        js : {
-            'true' : function() {
-                this.bind('click', this._onClick.bind(this));
-            }
-        },
-        loaded: {
-            'true': function() {
-                this.elem('player').attr('src', this.elem('player').attr('data-url'));
-
-                this.__self.liveUnbindFrom('click');
-            },
-
-            '' : function() {
-                this.elem('player').attr('src', '');
-                this.bindTo('click', this._onClick.bind(this));
-            }
-        },
-    },
-    _onClick : function() {
-        this.setMod('loaded');
-    }
-
-}));
-
-});
-
-}());
-/* end: ../../blocks/video/video.browser.js */
-/* begin: ../../blocks/youtube-api/youtube-api.browser.js */
-(function(){
-modules.define('youtube-api', ['loader_type_js'], function(provide, loader) {
-
-    loader(
-        'https://www.youtube.com/iframe_api',
-        function() { provide(YT) });
-
-});
-
-}());
-/* end: ../../blocks/youtube-api/youtube-api.browser.js */
 /* begin: ../../blocks/jquery/__fullpage/jquery__fullpage.browser.js */
 (function(){
 // requier with this module doesn't work correct
@@ -23825,6 +23845,2451 @@ modules.define( 'jquery__fullpage', ['jquery'], function(provide, $) {
 
 }());
 /* end: ../../blocks/jquery/__fullpage/jquery__fullpage.browser.js */
+/* begin: ../../blocks/download-button-smart/download-button-smart.browser.js */
+(function(){
+'use strict';
+
+modules.define('download-button-smart', ['i-bem__dom', 'jquery'], function (provide, BEMDOM, $) {
+    provide(BEMDOM.decl(this.name, {
+        onSetMod: {
+            js: {
+                inited: function inited() {
+                    var l = window.location.href;
+                    var query = l.split('?')[1] || null;
+                    if (query) {
+                        var button = this.findBlockInside('button');
+                        var $button = $(button.domElem);
+                        var curr = $button.attr('href');
+                        $button.attr('href', curr + '?' + query);
+                    }
+                }
+            }
+        }
+    }));
+});
+
+}());
+/* end: ../../blocks/download-button-smart/download-button-smart.browser.js */
+/* begin: ../../blocks/contact/contact.browser.js */
+(function(){
+modules.define('contact',
+    ['i-bem__dom', 'jquery'],
+    function(provide, BEMDOM, $) {
+
+provide(BEMDOM.decl(this.name, {
+
+    onSetMod : {
+        js : {
+            inited : function() {
+                this._button = this.findBlockOn(this.elem('button'), 'button');
+                this._form = this.findBlockInside('form');
+                this._message = this.elem('message');
+                this._captchaRes = false;
+
+                var body = document.querySelector('.page');
+
+                body.addEventListener('captcha-response', function(e) {
+                    this._captchaRes = !!e.detail.res;
+                    var self = this;
+
+                    // console.log('submit captcha', this._captchaRes);
+
+                    this._form.validate()
+                    .then(function(st) {
+                        if (self._form.checkFields(st) && self._captchaRes) {
+                            self.delMod(self.elem('button'), 'disabled');
+                        } else {
+                            self.setMod(self.elem('button'), 'disabled');
+                            // self._updateFirstInvalidField(st);
+                        };
+                    });
+                }.bind(this));
+
+                body.addEventListener('captcha-loaded', function(e) {
+                    var captcha = e.detail.grecaptcha;
+                    var self = this;
+
+                    captcha.render(document.querySelector('.contact__captcha'), {
+                        'sitekey' : '6LellxEUAAAAAIITOAuoIcLdklH2XRzERVd2Fy_5',
+                        hl: self.params.lang
+                    });
+
+                    this._form.on('submit', function(e) {
+                        this._form.setMod('submitted');
+
+                        this._form.validate()
+                        .then(function(st) {
+                            if (self._form.checkFields(st) && self._captchaRes) {
+                                self.delMod(self.elem('button'), 'disabled');
+                                console.log('submit success', self._form.getVal());
+                            } else {
+                                self.setMod(self.elem('button'), 'disabled');
+                                console.log('submit failure', self._form.getVal());
+                            };
+                        });
+                    }.bind(this));
+
+                    this._form.on('change', function(e) {
+                        this._form.validate()
+                        .then(function(st) {
+                            if (self._form.checkFields(st) && self._captchaRes) {
+                                self.delMod(self.elem('button'), 'disabled');
+                            } else {
+                                self.setMod(self.elem('button'), 'disabled');
+                                // self._updateFirstInvalidField(st);
+                            };
+                        });
+                    }.bind(this));
+                }.bind(this));
+            }
+        }
+    },
+
+    // _updateFirstInvalidField: function(st) {
+    //     if (!st) return;
+    //     var fieldName;
+
+    //     st.forEach(function(s) {
+    //         if (!s || fieldName) return;
+    //         fieldName = s.field;
+    //     })
+
+    //     this._message.text(this._form.getFieldByName(fieldName).params.invalid);
+    // },
+
+}));
+
+});
+
+}());
+/* end: ../../blocks/contact/contact.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/form-field/form-field.browser.js */
+(function(){
+/**
+ * @module form-field
+ */
+modules.define('form-field',
+    ['i-bem__dom', 'validation'],
+    function(provide, BEMDOM, Validation) {
+/**
+ * Field block
+ */
+provide(BEMDOM.decl(this.name, /** @lends form-field.prototype */{
+    onSetMod : {
+        'js' : {
+            'inited' : function() {
+                !this.getControl() && console.warn('Control required for form-field', this); // jshint ignore:line
+                !this.hasMod('type') && console.warn('Type modifier required for form-field', this); // jshint ignore:line
+                !this.getName() && console.warn('Name required for form-field', this); // jshint ignore:line
+
+                this._messages = {};
+
+                this.requireDirty();
+                this._initVal = this.getVal();
+                this._status = this.getStatus();
+            }
+        },
+
+        'disabled' : function(modName, modVal) {
+            this.findBlockInside('label').setMod(modName, modVal);
+            this.getControl().setMod(modName, modVal);
+        }
+    },
+    /**
+     * Returns control of field
+     * @protected
+     * @returns {BEM}
+     */
+    getControl : function() {
+        return this._control || (this._control = this.findBlockInside(this.getMod('type')));
+    },
+    /**
+     * Returns field value
+     * @returns {String}
+     */
+    getVal : function() {
+        return this.getControl().getVal();
+    },
+    /**
+     * Sets value
+     * @param {*|String} val устанавливаемое значение
+     * @param {Boolean} emitEvent
+     */
+    setVal : function(val, emitEvent) {
+        emitEvent && this.emit('change', {
+            field : this.getName() || this.getId(),
+            val : val
+        });
+        this.getControl().setVal(val);
+    },
+    /**
+     * Control changed
+     * @protected
+     */
+    _onControlChange : function(e, data) {
+        /**
+         * Input data change event
+         *
+         * @event FormField#change
+         * @type {Object}
+         */
+        this.emit('change', data);
+    },
+    /**
+     * Control focused
+     * @protected
+     */
+    _onControlFocus : function(e, data) {
+        this.setMod('focused', true);
+        /**
+         * Input focus event
+         *
+         * @event FormField#focus
+         * @type {Object}
+         */
+        this.emit('focus', data);
+    },
+    /**
+     * Control unfocused
+     * @protected
+     */
+    _onControlBlur : function(e, data) {
+        this.delMod('focused');
+        /**
+         * Input blur event
+         *
+         * @event FormField#blur
+         * @type {Object}
+         */
+        this.emit('blur', data);
+    },
+    /**
+     * Returns field name
+     * @returns {String}
+     * @public
+     */
+    getName : function() {
+        return this.domElem.attr('data-name');
+    },
+    /**
+     * Returns field id
+     * @returns {String}
+     * @public
+     */
+    getId : function() {
+        return this.params.id;
+    },
+    /**
+     * Get form-field validator instance
+     *
+     * @public
+     * @returns {Object}
+     */
+    getValidator : function() {
+        return this._validator || (this._validator = Validation.create());
+    },
+    /**
+     * Get current form-field status
+     *
+     * @public
+     * @returns {Promise}
+     */
+    getStatus : function() {
+        return this.getValidator().check(String(this.getVal()));
+    },
+    /**
+     * Set current form-field status
+     *
+     * @public
+     * @param status
+     * @returns {String|Boolean}
+     */
+    setStatus : function(status) {
+        this._status = status;
+        this._updateStatus(status);
+        return this._status;
+    },
+    /**
+     * Set validation messages in runtime
+     * @param messages
+     */
+    setValidationMessages : function (messages) {
+        Object.keys(messages).forEach(function (validator) {
+            this.setValidationMessage(validator, messages[validator]);
+        }.bind(this));
+    },
+    setValidationMessage : function (validator, message) {
+        this._messages[validator] = this._messages[validator] || {};
+        this._messages[validator] = message;
+    },
+    /**
+     * Get validation messages
+     * @returns {Object}
+     */
+    getValidationMessages : function () {
+        var msgs = {};
+        Object.keys(this._messages).forEach(function (validator) {
+            msgs[validator] = validator;
+        });
+        return msgs;
+    },
+    getValidationMessage : function (validator) {
+        return this._messages[validator]? this._messages[validator] : null;
+    },
+    /**
+     * Require dirty mechanic
+     */
+    requireDirty : function () {
+        this.on('blur', function() {
+            this._dirty = this._dirty || (this.getVal() !== this._initVal);
+            this.toggleMod('dirty', true, this._dirty);
+            this._dirty && this.validate();
+        }.bind(this));
+    },
+    /**
+     * Get all dirty fields
+     * @returns {Array}
+     */
+    getDirty : function() {
+        return !!this._dirty;
+    },
+    /**
+     * Validate form-field
+     * catch field with message
+     *
+     * @public
+     * @returns {Promise}
+     */
+    validate : function() {
+        return this.getStatus().then(function(error) {
+            this._updateStatus(error);
+            return error;
+        }.bind(this));
+    },
+    /**
+     * Update statuses on form-field and elements: control
+     *
+     * @protected
+     */
+    _updateStatus : function(status) {
+        this.toggleMod('invalid', true, Boolean(status));
+        this.getControl().toggleMod('invalid', true, Boolean(status));
+        this._status = status;
+    }
+}, /** @lends form-field */{
+    live : true
+}));
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form-field/form-field.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/validation/validation.browser.js */
+(function(){
+/**
+ * @module validation
+ */
+modules.define('validation',
+    ['vow'],
+    function (provide, Vow) {
+/**
+ * Validation container
+ * @constructor
+ */
+function Validation() {
+    this._stack = [];
+}
+
+var ptp = Validation.prototype;
+ptp._stack = null;
+/**
+ * push validator to stack
+ *
+ * @param {Function} validator
+ * @returns {Object}
+ */
+ptp.push = function (validator) {
+    if(typeof validator !== 'function') {
+        throw new Error('Expected function but instead saw ' + typeof validator);
+    }
+    this._stack.push(validator);
+    return this;
+};
+/**
+ * Runs all registered validators for a specified value
+ * and returns the first error or null
+ *
+ * @param {*} value
+ * @returns {Promise}
+ */
+ptp.check = function(value) {
+    return Vow.all(this._stack.map(function(validationFunction) {
+        return new Vow.Promise(function(resolve, reject) {
+            var validation = Vow.resolve(validationFunction(value));
+            return validation.then(function (res) {
+                res !== null? reject(res) : resolve(null);
+            });
+        });
+    }))
+    .then(function () { return null; })
+    .fail(function(error) { return error });
+};
+
+provide({
+    /**
+     * Static object creator
+     *
+     * @api
+     * @returns {Object}
+     */
+    create : function() {
+        var res = new Validation();
+        if(arguments.length) {
+            for(var i = 0, l = arguments.length; i < l; i++) {
+                res.push(arguments[i]);
+            }
+        }
+        return res;
+    }
+});
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/validation/validation.browser.js */
+/* begin: ../../libs/bem-core/common.blocks/vow/vow.vanilla.js */
+(function(){
+/**
+ * @module vow
+ * @author Filatov Dmitry <dfilatov@yandex-team.ru>
+ * @version 0.4.10
+ * @license
+ * Dual licensed under the MIT and GPL licenses:
+ *   * http://www.opensource.org/licenses/mit-license.php
+ *   * http://www.gnu.org/licenses/gpl.html
+ */
+
+(function(global) {
+
+var undef,
+    nextTick = (function() {
+        var fns = [],
+            enqueueFn = function(fn) {
+                return fns.push(fn) === 1;
+            },
+            callFns = function() {
+                var fnsToCall = fns, i = 0, len = fns.length;
+                fns = [];
+                while(i < len) {
+                    fnsToCall[i++]();
+                }
+            };
+
+        if(typeof setImmediate === 'function') { // ie10, nodejs >= 0.10
+            return function(fn) {
+                enqueueFn(fn) && setImmediate(callFns);
+            };
+        }
+
+        if(typeof process === 'object' && process.nextTick) { // nodejs < 0.10
+            return function(fn) {
+                enqueueFn(fn) && process.nextTick(callFns);
+            };
+        }
+
+        var MutationObserver = global.MutationObserver || global.WebKitMutationObserver; // modern browsers
+        if(MutationObserver) {
+            var num = 1,
+                node = document.createTextNode('');
+
+            new MutationObserver(callFns).observe(node, { characterData : true });
+
+            return function(fn) {
+                enqueueFn(fn) && (node.data = (num *= -1));
+            };
+        }
+
+        if(global.postMessage) {
+            var isPostMessageAsync = true;
+            if(global.attachEvent) {
+                var checkAsync = function() {
+                        isPostMessageAsync = false;
+                    };
+                global.attachEvent('onmessage', checkAsync);
+                global.postMessage('__checkAsync', '*');
+                global.detachEvent('onmessage', checkAsync);
+            }
+
+            if(isPostMessageAsync) {
+                var msg = '__promise' + +new Date,
+                    onMessage = function(e) {
+                        if(e.data === msg) {
+                            e.stopPropagation && e.stopPropagation();
+                            callFns();
+                        }
+                    };
+
+                global.addEventListener?
+                    global.addEventListener('message', onMessage, true) :
+                    global.attachEvent('onmessage', onMessage);
+
+                return function(fn) {
+                    enqueueFn(fn) && global.postMessage(msg, '*');
+                };
+            }
+        }
+
+        var doc = global.document;
+        if('onreadystatechange' in doc.createElement('script')) { // ie6-ie8
+            var createScript = function() {
+                    var script = doc.createElement('script');
+                    script.onreadystatechange = function() {
+                        script.parentNode.removeChild(script);
+                        script = script.onreadystatechange = null;
+                        callFns();
+                };
+                (doc.documentElement || doc.body).appendChild(script);
+            };
+
+            return function(fn) {
+                enqueueFn(fn) && createScript();
+            };
+        }
+
+        return function(fn) { // old browsers
+            enqueueFn(fn) && setTimeout(callFns, 0);
+        };
+    })(),
+    throwException = function(e) {
+        nextTick(function() {
+            throw e;
+        });
+    },
+    isFunction = function(obj) {
+        return typeof obj === 'function';
+    },
+    isObject = function(obj) {
+        return obj !== null && typeof obj === 'object';
+    },
+    toStr = Object.prototype.toString,
+    isArray = Array.isArray || function(obj) {
+        return toStr.call(obj) === '[object Array]';
+    },
+    getArrayKeys = function(arr) {
+        var res = [],
+            i = 0, len = arr.length;
+        while(i < len) {
+            res.push(i++);
+        }
+        return res;
+    },
+    getObjectKeys = Object.keys || function(obj) {
+        var res = [];
+        for(var i in obj) {
+            obj.hasOwnProperty(i) && res.push(i);
+        }
+        return res;
+    },
+    defineCustomErrorType = function(name) {
+        var res = function(message) {
+            this.name = name;
+            this.message = message;
+        };
+
+        res.prototype = new Error();
+
+        return res;
+    },
+    wrapOnFulfilled = function(onFulfilled, idx) {
+        return function(val) {
+            onFulfilled.call(this, val, idx);
+        };
+    };
+
+/**
+ * @class Deferred
+ * @exports vow:Deferred
+ * @description
+ * The `Deferred` class is used to encapsulate newly-created promise object along with functions that resolve, reject or notify it.
+ */
+
+/**
+ * @constructor
+ * @description
+ * You can use `vow.defer()` instead of using this constructor.
+ *
+ * `new vow.Deferred()` gives the same result as `vow.defer()`.
+ */
+var Deferred = function() {
+    this._promise = new Promise();
+};
+
+Deferred.prototype = /** @lends Deferred.prototype */{
+    /**
+     * Returns the corresponding promise.
+     *
+     * @returns {vow:Promise}
+     */
+    promise : function() {
+        return this._promise;
+    },
+
+    /**
+     * Resolves the corresponding promise with the given `value`.
+     *
+     * @param {*} value
+     *
+     * @example
+     * ```js
+     * var defer = vow.defer(),
+     *     promise = defer.promise();
+     *
+     * promise.then(function(value) {
+     *     // value is "'success'" here
+     * });
+     *
+     * defer.resolve('success');
+     * ```
+     */
+    resolve : function(value) {
+        this._promise.isResolved() || this._promise._resolve(value);
+    },
+
+    /**
+     * Rejects the corresponding promise with the given `reason`.
+     *
+     * @param {*} reason
+     *
+     * @example
+     * ```js
+     * var defer = vow.defer(),
+     *     promise = defer.promise();
+     *
+     * promise.fail(function(reason) {
+     *     // reason is "'something is wrong'" here
+     * });
+     *
+     * defer.reject('something is wrong');
+     * ```
+     */
+    reject : function(reason) {
+        if(this._promise.isResolved()) {
+            return;
+        }
+
+        if(vow.isPromise(reason)) {
+            reason = reason.then(function(val) {
+                var defer = vow.defer();
+                defer.reject(val);
+                return defer.promise();
+            });
+            this._promise._resolve(reason);
+        }
+        else {
+            this._promise._reject(reason);
+        }
+    },
+
+    /**
+     * Notifies the corresponding promise with the given `value`.
+     *
+     * @param {*} value
+     *
+     * @example
+     * ```js
+     * var defer = vow.defer(),
+     *     promise = defer.promise();
+     *
+     * promise.progress(function(value) {
+     *     // value is "'20%'", "'40%'" here
+     * });
+     *
+     * defer.notify('20%');
+     * defer.notify('40%');
+     * ```
+     */
+    notify : function(value) {
+        this._promise.isResolved() || this._promise._notify(value);
+    }
+};
+
+var PROMISE_STATUS = {
+    PENDING   : 0,
+    RESOLVED  : 1,
+    FULFILLED : 2,
+    REJECTED  : 3
+};
+
+/**
+ * @class Promise
+ * @exports vow:Promise
+ * @description
+ * The `Promise` class is used when you want to give to the caller something to subscribe to,
+ * but not the ability to resolve or reject the deferred.
+ */
+
+/**
+ * @constructor
+ * @param {Function} resolver See https://github.com/domenic/promises-unwrapping/blob/master/README.md#the-promise-constructor for details.
+ * @description
+ * You should use this constructor directly only if you are going to use `vow` as DOM Promises implementation.
+ * In other case you should use `vow.defer()` and `defer.promise()` methods.
+ * @example
+ * ```js
+ * function fetchJSON(url) {
+ *     return new vow.Promise(function(resolve, reject, notify) {
+ *         var xhr = new XMLHttpRequest();
+ *         xhr.open('GET', url);
+ *         xhr.responseType = 'json';
+ *         xhr.send();
+ *         xhr.onload = function() {
+ *             if(xhr.response) {
+ *                 resolve(xhr.response);
+ *             }
+ *             else {
+ *                 reject(new TypeError());
+ *             }
+ *         };
+ *     });
+ * }
+ * ```
+ */
+var Promise = function(resolver) {
+    this._value = undef;
+    this._status = PROMISE_STATUS.PENDING;
+
+    this._fulfilledCallbacks = [];
+    this._rejectedCallbacks = [];
+    this._progressCallbacks = [];
+
+    if(resolver) { // NOTE: see https://github.com/domenic/promises-unwrapping/blob/master/README.md
+        var _this = this,
+            resolverFnLen = resolver.length;
+
+        resolver(
+            function(val) {
+                _this.isResolved() || _this._resolve(val);
+            },
+            resolverFnLen > 1?
+                function(reason) {
+                    _this.isResolved() || _this._reject(reason);
+                } :
+                undef,
+            resolverFnLen > 2?
+                function(val) {
+                    _this.isResolved() || _this._notify(val);
+                } :
+                undef);
+    }
+};
+
+Promise.prototype = /** @lends Promise.prototype */ {
+    /**
+     * Returns the value of the fulfilled promise or the reason in case of rejection.
+     *
+     * @returns {*}
+     */
+    valueOf : function() {
+        return this._value;
+    },
+
+    /**
+     * Returns `true` if the promise is resolved.
+     *
+     * @returns {Boolean}
+     */
+    isResolved : function() {
+        return this._status !== PROMISE_STATUS.PENDING;
+    },
+
+    /**
+     * Returns `true` if the promise is fulfilled.
+     *
+     * @returns {Boolean}
+     */
+    isFulfilled : function() {
+        return this._status === PROMISE_STATUS.FULFILLED;
+    },
+
+    /**
+     * Returns `true` if the promise is rejected.
+     *
+     * @returns {Boolean}
+     */
+    isRejected : function() {
+        return this._status === PROMISE_STATUS.REJECTED;
+    },
+
+    /**
+     * Adds reactions to the promise.
+     *
+     * @param {Function} [onFulfilled] Callback that will be invoked with a provided value after the promise has been fulfilled
+     * @param {Function} [onRejected] Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Function} [onProgress] Callback that will be invoked with a provided value after the promise has been notified
+     * @param {Object} [ctx] Context of the callbacks execution
+     * @returns {vow:Promise} A new promise, see https://github.com/promises-aplus/promises-spec for details
+     */
+    then : function(onFulfilled, onRejected, onProgress, ctx) {
+        var defer = new Deferred();
+        this._addCallbacks(defer, onFulfilled, onRejected, onProgress, ctx);
+        return defer.promise();
+    },
+
+    /**
+     * Adds only a rejection reaction. This method is a shorthand for `promise.then(undefined, onRejected)`.
+     *
+     * @param {Function} onRejected Callback that will be called with a provided 'reason' as argument after the promise has been rejected
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    'catch' : function(onRejected, ctx) {
+        return this.then(undef, onRejected, ctx);
+    },
+
+    /**
+     * Adds only a rejection reaction. This method is a shorthand for `promise.then(null, onRejected)`. It's also an alias for `catch`.
+     *
+     * @param {Function} onRejected Callback to be called with the value after promise has been rejected
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    fail : function(onRejected, ctx) {
+        return this.then(undef, onRejected, ctx);
+    },
+
+    /**
+     * Adds a resolving reaction (for both fulfillment and rejection).
+     *
+     * @param {Function} onResolved Callback that will be invoked with the promise as an argument, after the promise has been resolved.
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    always : function(onResolved, ctx) {
+        var _this = this,
+            cb = function() {
+                return onResolved.call(this, _this);
+            };
+
+        return this.then(cb, cb, ctx);
+    },
+
+    /**
+     * Adds a progress reaction.
+     *
+     * @param {Function} onProgress Callback that will be called with a provided value when the promise has been notified
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    progress : function(onProgress, ctx) {
+        return this.then(undef, undef, onProgress, ctx);
+    },
+
+    /**
+     * Like `promise.then`, but "spreads" the array into a variadic value handler.
+     * It is useful with the `vow.all` and the `vow.allResolved` methods.
+     *
+     * @param {Function} [onFulfilled] Callback that will be invoked with a provided value after the promise has been fulfilled
+     * @param {Function} [onRejected] Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Object} [ctx] Context of the callbacks execution
+     * @returns {vow:Promise}
+     *
+     * @example
+     * ```js
+     * var defer1 = vow.defer(),
+     *     defer2 = vow.defer();
+     *
+     * vow.all([defer1.promise(), defer2.promise()]).spread(function(arg1, arg2) {
+     *     // arg1 is "1", arg2 is "'two'" here
+     * });
+     *
+     * defer1.resolve(1);
+     * defer2.resolve('two');
+     * ```
+     */
+    spread : function(onFulfilled, onRejected, ctx) {
+        return this.then(
+            function(val) {
+                return onFulfilled.apply(this, val);
+            },
+            onRejected,
+            ctx);
+    },
+
+    /**
+     * Like `then`, but terminates a chain of promises.
+     * If the promise has been rejected, this method throws it's "reason" as an exception in a future turn of the event loop.
+     *
+     * @param {Function} [onFulfilled] Callback that will be invoked with a provided value after the promise has been fulfilled
+     * @param {Function} [onRejected] Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Function} [onProgress] Callback that will be invoked with a provided value after the promise has been notified
+     * @param {Object} [ctx] Context of the callbacks execution
+     *
+     * @example
+     * ```js
+     * var defer = vow.defer();
+     * defer.reject(Error('Internal error'));
+     * defer.promise().done(); // exception to be thrown
+     * ```
+     */
+    done : function(onFulfilled, onRejected, onProgress, ctx) {
+        this
+            .then(onFulfilled, onRejected, onProgress, ctx)
+            .fail(throwException);
+    },
+
+    /**
+     * Returns a new promise that will be fulfilled in `delay` milliseconds if the promise is fulfilled,
+     * or immediately rejected if the promise is rejected.
+     *
+     * @param {Number} delay
+     * @returns {vow:Promise}
+     */
+    delay : function(delay) {
+        var timer,
+            promise = this.then(function(val) {
+                var defer = new Deferred();
+                timer = setTimeout(
+                    function() {
+                        defer.resolve(val);
+                    },
+                    delay);
+
+                return defer.promise();
+            });
+
+        promise.always(function() {
+            clearTimeout(timer);
+        });
+
+        return promise;
+    },
+
+    /**
+     * Returns a new promise that will be rejected in `timeout` milliseconds
+     * if the promise is not resolved beforehand.
+     *
+     * @param {Number} timeout
+     * @returns {vow:Promise}
+     *
+     * @example
+     * ```js
+     * var defer = vow.defer(),
+     *     promiseWithTimeout1 = defer.promise().timeout(50),
+     *     promiseWithTimeout2 = defer.promise().timeout(200);
+     *
+     * setTimeout(
+     *     function() {
+     *         defer.resolve('ok');
+     *     },
+     *     100);
+     *
+     * promiseWithTimeout1.fail(function(reason) {
+     *     // promiseWithTimeout to be rejected in 50ms
+     * });
+     *
+     * promiseWithTimeout2.then(function(value) {
+     *     // promiseWithTimeout to be fulfilled with "'ok'" value
+     * });
+     * ```
+     */
+    timeout : function(timeout) {
+        var defer = new Deferred(),
+            timer = setTimeout(
+                function() {
+                    defer.reject(new vow.TimedOutError('timed out'));
+                },
+                timeout);
+
+        this.then(
+            function(val) {
+                defer.resolve(val);
+            },
+            function(reason) {
+                defer.reject(reason);
+            });
+
+        defer.promise().always(function() {
+            clearTimeout(timer);
+        });
+
+        return defer.promise();
+    },
+
+    _vow : true,
+
+    _resolve : function(val) {
+        if(this._status > PROMISE_STATUS.RESOLVED) {
+            return;
+        }
+
+        if(val === this) {
+            this._reject(TypeError('Can\'t resolve promise with itself'));
+            return;
+        }
+
+        this._status = PROMISE_STATUS.RESOLVED;
+
+        if(val && !!val._vow) { // shortpath for vow.Promise
+            val.isFulfilled()?
+                this._fulfill(val.valueOf()) :
+                val.isRejected()?
+                    this._reject(val.valueOf()) :
+                    val.then(
+                        this._fulfill,
+                        this._reject,
+                        this._notify,
+                        this);
+            return;
+        }
+
+        if(isObject(val) || isFunction(val)) {
+            var then;
+            try {
+                then = val.then;
+            }
+            catch(e) {
+                this._reject(e);
+                return;
+            }
+
+            if(isFunction(then)) {
+                var _this = this,
+                    isResolved = false;
+
+                try {
+                    then.call(
+                        val,
+                        function(val) {
+                            if(isResolved) {
+                                return;
+                            }
+
+                            isResolved = true;
+                            _this._resolve(val);
+                        },
+                        function(err) {
+                            if(isResolved) {
+                                return;
+                            }
+
+                            isResolved = true;
+                            _this._reject(err);
+                        },
+                        function(val) {
+                            _this._notify(val);
+                        });
+                }
+                catch(e) {
+                    isResolved || this._reject(e);
+                }
+
+                return;
+            }
+        }
+
+        this._fulfill(val);
+    },
+
+    _fulfill : function(val) {
+        if(this._status > PROMISE_STATUS.RESOLVED) {
+            return;
+        }
+
+        this._status = PROMISE_STATUS.FULFILLED;
+        this._value = val;
+
+        this._callCallbacks(this._fulfilledCallbacks, val);
+        this._fulfilledCallbacks = this._rejectedCallbacks = this._progressCallbacks = undef;
+    },
+
+    _reject : function(reason) {
+        if(this._status > PROMISE_STATUS.RESOLVED) {
+            return;
+        }
+
+        this._status = PROMISE_STATUS.REJECTED;
+        this._value = reason;
+
+        this._callCallbacks(this._rejectedCallbacks, reason);
+        this._fulfilledCallbacks = this._rejectedCallbacks = this._progressCallbacks = undef;
+    },
+
+    _notify : function(val) {
+        this._callCallbacks(this._progressCallbacks, val);
+    },
+
+    _addCallbacks : function(defer, onFulfilled, onRejected, onProgress, ctx) {
+        if(onRejected && !isFunction(onRejected)) {
+            ctx = onRejected;
+            onRejected = undef;
+        }
+        else if(onProgress && !isFunction(onProgress)) {
+            ctx = onProgress;
+            onProgress = undef;
+        }
+
+        var cb;
+
+        if(!this.isRejected()) {
+            cb = { defer : defer, fn : isFunction(onFulfilled)? onFulfilled : undef, ctx : ctx };
+            this.isFulfilled()?
+                this._callCallbacks([cb], this._value) :
+                this._fulfilledCallbacks.push(cb);
+        }
+
+        if(!this.isFulfilled()) {
+            cb = { defer : defer, fn : onRejected, ctx : ctx };
+            this.isRejected()?
+                this._callCallbacks([cb], this._value) :
+                this._rejectedCallbacks.push(cb);
+        }
+
+        if(this._status <= PROMISE_STATUS.RESOLVED) {
+            this._progressCallbacks.push({ defer : defer, fn : onProgress, ctx : ctx });
+        }
+    },
+
+    _callCallbacks : function(callbacks, arg) {
+        var len = callbacks.length;
+        if(!len) {
+            return;
+        }
+
+        var isResolved = this.isResolved(),
+            isFulfilled = this.isFulfilled();
+
+        nextTick(function() {
+            var i = 0, cb, defer, fn;
+            while(i < len) {
+                cb = callbacks[i++];
+                defer = cb.defer;
+                fn = cb.fn;
+
+                if(fn) {
+                    var ctx = cb.ctx,
+                        res;
+                    try {
+                        res = ctx? fn.call(ctx, arg) : fn(arg);
+                    }
+                    catch(e) {
+                        defer.reject(e);
+                        continue;
+                    }
+
+                    isResolved?
+                        defer.resolve(res) :
+                        defer.notify(res);
+                }
+                else {
+                    isResolved?
+                        isFulfilled?
+                            defer.resolve(arg) :
+                            defer.reject(arg) :
+                        defer.notify(arg);
+                }
+            }
+        });
+    }
+};
+
+/** @lends Promise */
+var staticMethods = {
+    /**
+     * Coerces the given `value` to a promise, or returns the `value` if it's already a promise.
+     *
+     * @param {*} value
+     * @returns {vow:Promise}
+     */
+    cast : function(value) {
+        return vow.cast(value);
+    },
+
+    /**
+     * Returns a promise, that will be fulfilled only after all the items in `iterable` are fulfilled.
+     * If any of the `iterable` items gets rejected, then the returned promise will be rejected.
+     *
+     * @param {Array|Object} iterable
+     * @returns {vow:Promise}
+     */
+    all : function(iterable) {
+        return vow.all(iterable);
+    },
+
+    /**
+     * Returns a promise, that will be fulfilled only when any of the items in `iterable` are fulfilled.
+     * If any of the `iterable` items gets rejected, then the returned promise will be rejected.
+     *
+     * @param {Array} iterable
+     * @returns {vow:Promise}
+     */
+    race : function(iterable) {
+        return vow.anyResolved(iterable);
+    },
+
+    /**
+     * Returns a promise that has already been resolved with the given `value`.
+     * If `value` is a promise, the returned promise will have `value`'s state.
+     *
+     * @param {*} value
+     * @returns {vow:Promise}
+     */
+    resolve : function(value) {
+        return vow.resolve(value);
+    },
+
+    /**
+     * Returns a promise that has already been rejected with the given `reason`.
+     *
+     * @param {*} reason
+     * @returns {vow:Promise}
+     */
+    reject : function(reason) {
+        return vow.reject(reason);
+    }
+};
+
+for(var prop in staticMethods) {
+    staticMethods.hasOwnProperty(prop) &&
+        (Promise[prop] = staticMethods[prop]);
+}
+
+var vow = /** @exports vow */ {
+    Deferred : Deferred,
+
+    Promise : Promise,
+
+    /**
+     * Creates a new deferred. This method is a factory method for `vow:Deferred` class.
+     * It's equivalent to `new vow.Deferred()`.
+     *
+     * @returns {vow:Deferred}
+     */
+    defer : function() {
+        return new Deferred();
+    },
+
+    /**
+     * Static equivalent to `promise.then`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Function} [onFulfilled] Callback that will be invoked with a provided value after the promise has been fulfilled
+     * @param {Function} [onRejected] Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Function} [onProgress] Callback that will be invoked with a provided value after the promise has been notified
+     * @param {Object} [ctx] Context of the callbacks execution
+     * @returns {vow:Promise}
+     */
+    when : function(value, onFulfilled, onRejected, onProgress, ctx) {
+        return vow.cast(value).then(onFulfilled, onRejected, onProgress, ctx);
+    },
+
+    /**
+     * Static equivalent to `promise.fail`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Function} onRejected Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    fail : function(value, onRejected, ctx) {
+        return vow.when(value, undef, onRejected, ctx);
+    },
+
+    /**
+     * Static equivalent to `promise.always`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Function} onResolved Callback that will be invoked with the promise as an argument, after the promise has been resolved.
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    always : function(value, onResolved, ctx) {
+        return vow.when(value).always(onResolved, ctx);
+    },
+
+    /**
+     * Static equivalent to `promise.progress`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Function} onProgress Callback that will be invoked with a provided value after the promise has been notified
+     * @param {Object} [ctx] Context of the callback execution
+     * @returns {vow:Promise}
+     */
+    progress : function(value, onProgress, ctx) {
+        return vow.when(value).progress(onProgress, ctx);
+    },
+
+    /**
+     * Static equivalent to `promise.spread`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Function} [onFulfilled] Callback that will be invoked with a provided value after the promise has been fulfilled
+     * @param {Function} [onRejected] Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Object} [ctx] Context of the callbacks execution
+     * @returns {vow:Promise}
+     */
+    spread : function(value, onFulfilled, onRejected, ctx) {
+        return vow.when(value).spread(onFulfilled, onRejected, ctx);
+    },
+
+    /**
+     * Static equivalent to `promise.done`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Function} [onFulfilled] Callback that will be invoked with a provided value after the promise has been fulfilled
+     * @param {Function} [onRejected] Callback that will be invoked with a provided reason after the promise has been rejected
+     * @param {Function} [onProgress] Callback that will be invoked with a provided value after the promise has been notified
+     * @param {Object} [ctx] Context of the callbacks execution
+     */
+    done : function(value, onFulfilled, onRejected, onProgress, ctx) {
+        vow.when(value).done(onFulfilled, onRejected, onProgress, ctx);
+    },
+
+    /**
+     * Checks whether the given `value` is a promise-like object
+     *
+     * @param {*} value
+     * @returns {Boolean}
+     *
+     * @example
+     * ```js
+     * vow.isPromise('something'); // returns false
+     * vow.isPromise(vow.defer().promise()); // returns true
+     * vow.isPromise({ then : function() { }); // returns true
+     * ```
+     */
+    isPromise : function(value) {
+        return isObject(value) && isFunction(value.then);
+    },
+
+    /**
+     * Coerces the given `value` to a promise, or returns the `value` if it's already a promise.
+     *
+     * @param {*} value
+     * @returns {vow:Promise}
+     */
+    cast : function(value) {
+        return value && !!value._vow?
+            value :
+            vow.resolve(value);
+    },
+
+    /**
+     * Static equivalent to `promise.valueOf`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @returns {*}
+     */
+    valueOf : function(value) {
+        return value && isFunction(value.valueOf)? value.valueOf() : value;
+    },
+
+    /**
+     * Static equivalent to `promise.isFulfilled`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @returns {Boolean}
+     */
+    isFulfilled : function(value) {
+        return value && isFunction(value.isFulfilled)? value.isFulfilled() : true;
+    },
+
+    /**
+     * Static equivalent to `promise.isRejected`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @returns {Boolean}
+     */
+    isRejected : function(value) {
+        return value && isFunction(value.isRejected)? value.isRejected() : false;
+    },
+
+    /**
+     * Static equivalent to `promise.isResolved`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @returns {Boolean}
+     */
+    isResolved : function(value) {
+        return value && isFunction(value.isResolved)? value.isResolved() : true;
+    },
+
+    /**
+     * Returns a promise that has already been resolved with the given `value`.
+     * If `value` is a promise, the returned promise will have `value`'s state.
+     *
+     * @param {*} value
+     * @returns {vow:Promise}
+     */
+    resolve : function(value) {
+        var res = vow.defer();
+        res.resolve(value);
+        return res.promise();
+    },
+
+    /**
+     * Returns a promise that has already been fulfilled with the given `value`.
+     * If `value` is a promise, the returned promise will be fulfilled with the fulfill/rejection value of `value`.
+     *
+     * @param {*} value
+     * @returns {vow:Promise}
+     */
+    fulfill : function(value) {
+        var defer = vow.defer(),
+            promise = defer.promise();
+
+        defer.resolve(value);
+
+        return promise.isFulfilled()?
+            promise :
+            promise.then(null, function(reason) {
+                return reason;
+            });
+    },
+
+    /**
+     * Returns a promise that has already been rejected with the given `reason`.
+     * If `reason` is a promise, the returned promise will be rejected with the fulfill/rejection value of `reason`.
+     *
+     * @param {*} reason
+     * @returns {vow:Promise}
+     */
+    reject : function(reason) {
+        var defer = vow.defer();
+        defer.reject(reason);
+        return defer.promise();
+    },
+
+    /**
+     * Invokes the given function `fn` with arguments `args`
+     *
+     * @param {Function} fn
+     * @param {...*} [args]
+     * @returns {vow:Promise}
+     *
+     * @example
+     * ```js
+     * var promise1 = vow.invoke(function(value) {
+     *         return value;
+     *     }, 'ok'),
+     *     promise2 = vow.invoke(function() {
+     *         throw Error();
+     *     });
+     *
+     * promise1.isFulfilled(); // true
+     * promise1.valueOf(); // 'ok'
+     * promise2.isRejected(); // true
+     * promise2.valueOf(); // instance of Error
+     * ```
+     */
+    invoke : function(fn, args) {
+        var len = Math.max(arguments.length - 1, 0),
+            callArgs;
+        if(len) { // optimization for V8
+            callArgs = Array(len);
+            var i = 0;
+            while(i < len) {
+                callArgs[i++] = arguments[i];
+            }
+        }
+
+        try {
+            return vow.resolve(callArgs?
+                fn.apply(global, callArgs) :
+                fn.call(global));
+        }
+        catch(e) {
+            return vow.reject(e);
+        }
+    },
+
+    /**
+     * Returns a promise, that will be fulfilled only after all the items in `iterable` are fulfilled.
+     * If any of the `iterable` items gets rejected, the promise will be rejected.
+     *
+     * @param {Array|Object} iterable
+     * @returns {vow:Promise}
+     *
+     * @example
+     * with array:
+     * ```js
+     * var defer1 = vow.defer(),
+     *     defer2 = vow.defer();
+     *
+     * vow.all([defer1.promise(), defer2.promise(), 3])
+     *     .then(function(value) {
+     *          // value is "[1, 2, 3]" here
+     *     });
+     *
+     * defer1.resolve(1);
+     * defer2.resolve(2);
+     * ```
+     *
+     * @example
+     * with object:
+     * ```js
+     * var defer1 = vow.defer(),
+     *     defer2 = vow.defer();
+     *
+     * vow.all({ p1 : defer1.promise(), p2 : defer2.promise(), p3 : 3 })
+     *     .then(function(value) {
+     *          // value is "{ p1 : 1, p2 : 2, p3 : 3 }" here
+     *     });
+     *
+     * defer1.resolve(1);
+     * defer2.resolve(2);
+     * ```
+     */
+    all : function(iterable) {
+        var defer = new Deferred(),
+            isPromisesArray = isArray(iterable),
+            keys = isPromisesArray?
+                getArrayKeys(iterable) :
+                getObjectKeys(iterable),
+            len = keys.length,
+            res = isPromisesArray? [] : {};
+
+        if(!len) {
+            defer.resolve(res);
+            return defer.promise();
+        }
+
+        var i = len;
+        vow._forEach(
+            iterable,
+            function(value, idx) {
+                res[keys[idx]] = value;
+                if(!--i) {
+                    defer.resolve(res);
+                }
+            },
+            defer.reject,
+            defer.notify,
+            defer,
+            keys);
+
+        return defer.promise();
+    },
+
+    /**
+     * Returns a promise, that will be fulfilled only after all the items in `iterable` are resolved.
+     *
+     * @param {Array|Object} iterable
+     * @returns {vow:Promise}
+     *
+     * @example
+     * ```js
+     * var defer1 = vow.defer(),
+     *     defer2 = vow.defer();
+     *
+     * vow.allResolved([defer1.promise(), defer2.promise()]).spread(function(promise1, promise2) {
+     *     promise1.isRejected(); // returns true
+     *     promise1.valueOf(); // returns "'error'"
+     *     promise2.isFulfilled(); // returns true
+     *     promise2.valueOf(); // returns "'ok'"
+     * });
+     *
+     * defer1.reject('error');
+     * defer2.resolve('ok');
+     * ```
+     */
+    allResolved : function(iterable) {
+        var defer = new Deferred(),
+            isPromisesArray = isArray(iterable),
+            keys = isPromisesArray?
+                getArrayKeys(iterable) :
+                getObjectKeys(iterable),
+            i = keys.length,
+            res = isPromisesArray? [] : {};
+
+        if(!i) {
+            defer.resolve(res);
+            return defer.promise();
+        }
+
+        var onResolved = function() {
+                --i || defer.resolve(iterable);
+            };
+
+        vow._forEach(
+            iterable,
+            onResolved,
+            onResolved,
+            defer.notify,
+            defer,
+            keys);
+
+        return defer.promise();
+    },
+
+    allPatiently : function(iterable) {
+        return vow.allResolved(iterable).then(function() {
+            var isPromisesArray = isArray(iterable),
+                keys = isPromisesArray?
+                    getArrayKeys(iterable) :
+                    getObjectKeys(iterable),
+                rejectedPromises, fulfilledPromises,
+                len = keys.length, i = 0, key, promise;
+
+            if(!len) {
+                return isPromisesArray? [] : {};
+            }
+
+            while(i < len) {
+                key = keys[i++];
+                promise = iterable[key];
+                if(vow.isRejected(promise)) {
+                    rejectedPromises || (rejectedPromises = isPromisesArray? [] : {});
+                    isPromisesArray?
+                        rejectedPromises.push(promise.valueOf()) :
+                        rejectedPromises[key] = promise.valueOf();
+                }
+                else if(!rejectedPromises) {
+                    (fulfilledPromises || (fulfilledPromises = isPromisesArray? [] : {}))[key] = vow.valueOf(promise);
+                }
+            }
+
+            if(rejectedPromises) {
+                throw rejectedPromises;
+            }
+
+            return fulfilledPromises;
+        });
+    },
+
+    /**
+     * Returns a promise, that will be fulfilled if any of the items in `iterable` is fulfilled.
+     * If all of the `iterable` items get rejected, the promise will be rejected (with the reason of the first rejected item).
+     *
+     * @param {Array} iterable
+     * @returns {vow:Promise}
+     */
+    any : function(iterable) {
+        var defer = new Deferred(),
+            len = iterable.length;
+
+        if(!len) {
+            defer.reject(Error());
+            return defer.promise();
+        }
+
+        var i = 0, reason;
+        vow._forEach(
+            iterable,
+            defer.resolve,
+            function(e) {
+                i || (reason = e);
+                ++i === len && defer.reject(reason);
+            },
+            defer.notify,
+            defer);
+
+        return defer.promise();
+    },
+
+    /**
+     * Returns a promise, that will be fulfilled only when any of the items in `iterable` is fulfilled.
+     * If any of the `iterable` items gets rejected, the promise will be rejected.
+     *
+     * @param {Array} iterable
+     * @returns {vow:Promise}
+     */
+    anyResolved : function(iterable) {
+        var defer = new Deferred(),
+            len = iterable.length;
+
+        if(!len) {
+            defer.reject(Error());
+            return defer.promise();
+        }
+
+        vow._forEach(
+            iterable,
+            defer.resolve,
+            defer.reject,
+            defer.notify,
+            defer);
+
+        return defer.promise();
+    },
+
+    /**
+     * Static equivalent to `promise.delay`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Number} delay
+     * @returns {vow:Promise}
+     */
+    delay : function(value, delay) {
+        return vow.resolve(value).delay(delay);
+    },
+
+    /**
+     * Static equivalent to `promise.timeout`.
+     * If `value` is not a promise, then `value` is treated as a fulfilled promise.
+     *
+     * @param {*} value
+     * @param {Number} timeout
+     * @returns {vow:Promise}
+     */
+    timeout : function(value, timeout) {
+        return vow.resolve(value).timeout(timeout);
+    },
+
+    _forEach : function(promises, onFulfilled, onRejected, onProgress, ctx, keys) {
+        var len = keys? keys.length : promises.length,
+            i = 0;
+
+        while(i < len) {
+            vow.when(
+                promises[keys? keys[i] : i],
+                wrapOnFulfilled(onFulfilled, i),
+                onRejected,
+                onProgress,
+                ctx);
+            ++i;
+        }
+    },
+
+    TimedOutError : defineCustomErrorType('TimedOut')
+};
+
+var defineAsGlobal = true;
+if(typeof module === 'object' && typeof module.exports === 'object') {
+    module.exports = vow;
+    defineAsGlobal = false;
+}
+
+if(typeof modules === 'object' && isFunction(modules.define)) {
+    modules.define('vow', function(provide) {
+        provide(vow);
+    });
+    defineAsGlobal = false;
+}
+
+if(typeof define === 'function') {
+    define(function(require, exports, module) {
+        module.exports = vow;
+    });
+    defineAsGlobal = false;
+}
+
+defineAsGlobal && (global.vow = vow);
+
+})(this);
+
+}());
+/* end: ../../libs/bem-core/common.blocks/vow/vow.vanilla.js */
+/* begin: ../../libs/bem-components/common.blocks/input/input.js */
+(function(){
+/**
+ * @module input
+ */
+
+modules.define('input', ['i-bem__dom', 'control'], function(provide, BEMDOM, Control) {
+
+/**
+ * @exports
+ * @class input
+ * @augments control
+ * @bem
+ */
+provide(BEMDOM.decl({ block : this.name, baseBlock : Control }, /** @lends input.prototype */{
+    onSetMod : {
+        'js' : {
+            'inited' : function() {
+                this.__base.apply(this, arguments);
+                this._val = this.elem('control').val();
+            }
+        }
+    },
+
+    /**
+     * Returns control value
+     * @returns {String}
+     * @override
+     */
+    getVal : function() {
+        return this._val;
+    },
+
+    /**
+     * Sets control value
+     * @param {String} val value
+     * @param {Object} [data] additional data
+     * @returns {input} this
+     */
+    setVal : function(val, data) {
+        val = String(val);
+
+        if(this._val !== val) {
+            this._val = val;
+
+            var control = this.elem('control');
+            control.val() !== val && control.val(val);
+
+            this.emit('change', data);
+        }
+
+        return this;
+    }
+}, /** @lends input */{
+    live : function() {
+        this.__base.apply(this, arguments);
+        return false;
+    }
+}));
+
+});
+
+}());
+/* end: ../../libs/bem-components/common.blocks/input/input.js */
+/* begin: ../../libs/bem-components/desktop.blocks/input/input.js */
+(function(){
+/**
+ * @module input
+ */
+
+modules.define('input', ['tick', 'idle'], function(provide, tick, idle, Input) {
+
+var instances = [],
+    boundToTick,
+    bindToTick = function() {
+        boundToTick = true;
+        tick
+            .on('tick', update)
+            .start();
+        idle
+            .on({
+                idle : function() {
+                    tick.un('tick', update);
+                },
+                wakeup : function() {
+                    tick.on('tick', update);
+                }
+            })
+            .start();
+    },
+    update = function() {
+        var instance, i = 0;
+        while(instance = instances[i++]) {
+            instance.setVal(instance.elem('control').val());
+        }
+    };
+
+/**
+ * @exports
+ * @class input
+ * @bem
+ */
+provide(Input.decl(/** @lends input.prototype */{
+    onSetMod : {
+        'js' : {
+            'inited' : function() {
+                this.__base.apply(this, arguments);
+
+                boundToTick || bindToTick();
+
+                // сохраняем индекс в массиве инстансов чтобы потом быстро из него удалять
+                this._instanceIndex = instances.push(this) - 1;
+            },
+
+            '' : function() {
+                this.__base.apply(this, arguments);
+
+                // удаляем из общего массива instances
+                instances.splice(this._instanceIndex, 1);
+                // понижаем _instanceIndex всем тем кто был добавлен в instances после нас
+                var i = this._instanceIndex, instance;
+                while(instance = instances[i++]) --instance._instanceIndex;
+            }
+        }
+    },
+
+    /**
+     * Нормализация установки фокуса для IE
+     * @private
+     * @override
+     */
+    _focus : function() {
+        var input = this.elem('control')[0];
+        if(input.createTextRange && !input.selectionStart) {
+            var range = input.createTextRange();
+            range.move('character', input.value.length);
+            range.select();
+        } else {
+            input.focus();
+        }
+    }
+}));
+
+});
+
+}());
+/* end: ../../libs/bem-components/desktop.blocks/input/input.js */
+/* begin: ../../libs/bem-core/common.blocks/tick/tick.vanilla.js */
+(function(){
+/**
+ * @module tick
+ * @description Helpers for polling anything
+ */
+
+modules.define('tick', ['inherit', 'events'], function(provide, inherit, events) {
+
+var TICK_INTERVAL = 50,
+    global = this.global,
+
+    /**
+     * @class Tick
+     * @augments events:Emitter
+     */
+    Tick = inherit(events.Emitter, /** @lends Tick.prototype */{
+        /**
+         * @constructor
+         */
+        __constructor : function() {
+            this._timer = null;
+            this._isStarted = false;
+        },
+
+        /**
+         * Starts polling
+         */
+        start : function() {
+            if(!this._isStarted) {
+                this._isStarted = true;
+                this._scheduleTick();
+            }
+        },
+
+        /**
+         * Stops polling
+         */
+        stop : function() {
+            if(this._isStarted) {
+                this._isStarted = false;
+                global.clearTimeout(this._timer);
+            }
+        },
+
+        _scheduleTick : function() {
+            var _this = this;
+            this._timer = global.setTimeout(
+                function() {
+                    _this._onTick();
+                },
+                TICK_INTERVAL);
+        },
+
+        _onTick : function() {
+            this.emit('tick');
+
+            this._isStarted && this._scheduleTick();
+        }
+    });
+
+provide(
+    /**
+     * @exports
+     * @type Tick
+     */
+    new Tick());
+
+});
+
+}());
+/* end: ../../libs/bem-core/common.blocks/tick/tick.vanilla.js */
+/* begin: ../../libs/bem-core/common.blocks/idle/idle.js */
+(function(){
+/**
+ * @module idle
+ */
+
+modules.define('idle', ['inherit', 'events', 'jquery'], function(provide, inherit, events, $) {
+
+var IDLE_TIMEOUT = 3000,
+    USER_EVENTS = 'mousemove keydown click',
+    /**
+     * @class Idle
+     * @augments events:Emitter
+     */
+    Idle = inherit(events.Emitter, /** @lends Idle.prototype */{
+        /**
+         * @constructor
+         */
+        __constructor : function() {
+            this._timer = null;
+            this._isStarted = false;
+            this._isIdle = false;
+        },
+
+        /**
+         * Starts monitoring of idle state
+         */
+        start : function() {
+            if(!this._isStarted) {
+                this._isStarted = true;
+                this._startTimer();
+                $(document).on(USER_EVENTS, $.proxy(this._onUserAction, this));
+            }
+        },
+
+        /**
+         * Stops monitoring of idle state
+         */
+        stop : function() {
+            if(this._isStarted) {
+                this._isStarted = false;
+                this._stopTimer();
+                $(document).off(USER_EVENTS, this._onUserAction);
+            }
+        },
+
+        /**
+         * Returns whether state is idle
+         * @returns {Boolean}
+         */
+        isIdle : function() {
+            return this._isIdle;
+        },
+
+        _onUserAction : function() {
+            if(this._isIdle) {
+                this._isIdle = false;
+                this.emit('wakeup');
+            }
+
+            this._stopTimer();
+            this._startTimer();
+        },
+
+        _startTimer : function() {
+            var _this = this;
+            this._timer = setTimeout(
+                function() {
+                    _this._onTimeout();
+                },
+                IDLE_TIMEOUT);
+        },
+
+        _stopTimer : function() {
+            this._timer && clearTimeout(this._timer);
+        },
+
+        _onTimeout : function() {
+            this._isIdle = true;
+            this.emit('idle');
+        }
+    });
+
+provide(
+    /**
+     * @exports
+     * @type Idle
+     */
+    new Idle());
+
+});
+
+}());
+/* end: ../../libs/bem-core/common.blocks/idle/idle.js */
+/* begin: ../../libs/bem-forms/common.blocks/form-field/_type/form-field_type_textarea.browser.js */
+(function(){
+/**
+ * @module form-field
+ */
+modules.define('form-field',
+    function(provide, FormField) {
+/**
+ * Textarea field
+ *
+ * @exports
+ * @class form-field
+ * @bem
+ */
+FormField.decl({ block : this.name, modName : 'type', modVal : 'textarea' }, {}, /** @lends form-field_type_textarea */{
+
+    live : function() {
+        var ptp = this.prototype;
+
+        this.__base();
+        this
+            .liveInitOnBlockInsideEvent('change', 'textarea', ptp._onControlChange)
+            .liveInitOnBlockInsideEvent({ modName : 'focused', modVal : true }, 'textarea', ptp._onControlFocus)
+            .liveInitOnBlockInsideEvent({ modName : 'focused', modVal : '' }, 'textarea', ptp._onControlBlur);
+    }
+});
+
+provide(FormField);
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form-field/_type/form-field_type_textarea.browser.js */
+/* begin: ../../libs/bem-components/common.blocks/textarea/textarea.js */
+(function(){
+/**
+ * @module textarea
+ */
+
+modules.define('textarea', ['i-bem__dom', 'input'], function(provide, BEMDOM, Input) {
+
+/**
+ * @exports
+ * @class textarea
+ * @augments input
+ * @bem
+ */
+provide(BEMDOM.decl({ block : this.name, baseBlock : Input }));
+
+});
+
+}());
+/* end: ../../libs/bem-components/common.blocks/textarea/textarea.js */
+/* begin: ../../libs/bem-forms/common.blocks/form-field/_type/form-field_type_hidden.browser.js */
+(function(){
+modules.define('form-field',
+    function(provide, FormField) {
+
+provide(FormField.decl({ modName : 'type', modVal : 'hidden' }, {
+
+    onSetMod : {
+        'disabled' : function(modName, modVal) {
+            this.getControl().prop('disabled', modVal);
+        }
+    },
+
+    setVal : function(val) {
+        this.getControl().val(val);
+    },
+
+    getVal : function() {
+        return this.getControl().val();
+    },
+
+    getControl : function() {
+        return this._control || (this._control = this.domElem.find('input'));
+    },
+
+    _updateStatus : function(status) {
+        this._status = status;
+    }
+
+}));
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form-field/_type/form-field_type_hidden.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/form-field/_required/form-field_required.browser.js */
+(function(){
+/**
+ * @module form-field
+ */
+modules.define('form-field',
+    ['validation_required'],
+    function(provide, validation_required, FormField) {
+/**
+ * Required form-field
+ * @exports
+ * @class form-field
+ * @bem
+ */
+FormField.decl({ modName : 'required', modVal : true }, /** @lends form-field.prototype */{
+
+    onSetMod : {
+        'js' : {
+            'inited' : function() {
+                this.__base.apply(this, arguments);
+
+                this.params.required && this.setValidationMessages({
+                    required : this.params.required.message
+                });
+
+                this.getValidator().push(validation_required(this));
+            }
+        }
+    }
+
+});
+
+provide(FormField);
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form-field/_required/form-field_required.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/validation/_required/validation_required.browser.js */
+(function(){
+/**
+ * @module validation_required
+ */
+modules.define('validation_required',
+    function(provide) {
+
+var DEFAULT_MESSAGE = 'Required field';
+provide(function(field) {
+    return function(val) {
+        return val? null : {
+            field : field.getName() || field.getId(),
+            message : field.getValidationMessage('required') || DEFAULT_MESSAGE
+        };
+    };
+});
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/validation/_required/validation_required.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/validation/_email/validation_email.browser.js */
+(function(){
+/**
+ * @module validation_email
+ */
+modules.define('validation_email',
+    function(provide) {
+
+var DEFAULT_MESSAGE = 'Field requires email inside',
+    EMAIL_RE = /^([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$/;
+
+provide(function(field) {
+    return function(val) {
+        return !val || EMAIL_RE.test(val)? null : {
+            field : field.getName() || field.getId(),
+            message : field.getValidationMessage('email') || DEFAULT_MESSAGE
+        };
+    };
+});
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/validation/_email/validation_email.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/form/form.browser.js */
+(function(){
+/**
+ * @module form
+ */
+modules.define('form',
+    ['i-bem__dom', 'objects', 'vow'],
+    function(provide, BEMDOM, objects, Vow) {
+/**
+ * Form declaration
+ */
+provide(BEMDOM.decl(this.name, /** @lends form.prototype */{
+    onSetMod : {
+        'js' : {
+            'inited' : function() {
+                this._changeStorage = null;
+
+                this.hasMod('disabled') && this._toggleDisableFields('disabled');
+
+                this._initVal = this.getVal();
+                this._status = this.getStatus();
+            }
+        },
+
+        'disabled' : this._toggleDisableFields
+    },
+    /**
+     * Toggle all fields disabled mod
+     */
+    _toggleDisableFields : function(modName, modVal) {
+        this.getFields().forEach(function(field) {
+            field.setMod(modName, modVal);
+        });
+
+        var btn = this.findBlockInside({ block : 'button', modName : 'type', modVal : 'submit' });
+        btn && btn.setMod(modName, modVal);
+    },
+    /**
+     * Bind to fields events
+     */
+    _bindToFields : function(eventName, fn) {
+        this.getFields().forEach(function(field) {
+            field.on(eventName, fn, this);
+        }.bind(this));
+    },
+    /**
+     * Returns all fields inside form
+     * @type {Array}
+     */
+    getFields : function() {
+        return this.findBlocksInside('form-field');
+    },
+    /**
+     * Returns field by name
+     * Work only with simple names or with camelCase names
+     * @param {String} name
+     * @returns {Object}
+     */
+    getFieldByName : function(name) {
+        var foundFields = this.getFields().filter(function(field) {
+            return field.getName() === name;
+        });
+
+        return foundFields.shift();
+    },
+    /**
+     * Returns serialized form data
+     * @returns {Object}
+     */
+    getVal : function() {
+        return this.getFields().reduce(function(res, field) {
+            var name = field.getName();
+            if(name) res[name] = field.getVal();
+            return res;
+        }, {});
+    },
+    /**
+     * Fills form fields with passed data
+     * @param {Object} [val] - data (params.fillData by default)
+     */
+    setVal : function(val) {
+        var storage = this._changeStorage = {};
+
+        this.getFields().forEach(function(field) {
+            field.setVal(val[field.getName()]);
+        });
+
+        this.nextTick(function() {
+            if(!objects.isEmpty(storage)) this.emit('change', storage);
+            this._changeStorage = null;
+        });
+    },
+    /**
+     * Field change event handler
+     * @abstract
+     * @private
+     * @param {Event} event
+     */
+    _onFieldChange : function() {
+        this.emit('change', this.getVal());
+    },
+    /**
+     * Field focus event handler
+     * @abstract
+     * @private
+     * @param {Event} event
+     */
+    _onFieldFocus : function() {
+        this.emit('focus', this.getVal());
+    },
+    /**
+     * onSubmit event handler
+     *
+     * @private
+     * @param {Event} e
+     */
+    _onSubmit : function(e) {
+        e.preventDefault();
+        this.emit('submit', this.getVal());
+    },
+    /**
+     * Get all invalid form-fields
+     *
+     * @public
+     * @returns {Promise}
+     */
+    getInvalidFields : function() {
+        var currentFields = this.getFields(),
+            invalid = [];
+
+        return Vow.all(currentFields.map(function (field) {
+            return field.getStatus();
+        })).then(function(fieldsStatuses) {
+            for(var i = 0, l = fieldsStatuses.length; i < l; i++) {
+                fieldsStatuses[i] !== null && invalid.push(currentFields[i]);
+            }
+            return invalid;
+        });
+    },
+    /**
+     * Get form status
+     *
+     * @public
+     * @returns {String|Boolean}
+     */
+    getStatus : function() {
+        return this._status;
+    },
+    /**
+     * Set form status
+     *
+     * @public
+     * @returns {String|Boolean}
+     */
+    setStatus : function(status) {
+        this._status = status;
+        this._updateStatus(status);
+        return this._status;
+    },
+    /**
+     * Check form validation state
+     *
+     * @public
+     * @returns {Promise}
+     */
+    validate : function() {
+        var currentFields = this.getFields();
+        return Vow.all(currentFields.map(function(field) {
+            return field.validate();
+        })).then(function(fieldsStatuses) {
+            this._updateStatus(fieldsStatuses);
+            return fieldsStatuses;
+        }.bind(this));
+    },
+    /**
+     * Update form modifier `invalid` according to current validity state.
+     *
+     * @protected
+     */
+    _updateStatus : function(fieldsStatuses) {
+        var st;
+        if(fieldsStatuses.length) {
+            st = this.checkFields(fieldsStatuses);
+        } else {
+            st = fieldsStatuses;
+        }
+
+        this.toggleMod('invalid', true, !st);
+        this._status = st;
+    },
+
+    checkFields : function (fieldsStatuses) {
+        var st = true;
+        for(var i = 0, l = fieldsStatuses.length; i < l; i++) {
+            if(fieldsStatuses[i] !== null) {
+                st = false;
+            }
+        }
+
+        return st;
+    }
+}, /** @lends form */{
+    live : function() {
+        var ptp = this.prototype;
+        this
+            .liveBindTo('submit', ptp._onSubmit)
+            .liveInitOnBlockInsideEvent('change', 'form-field', ptp._onFieldChange)
+            .liveInitOnBlockInsideEvent('focus', 'form-field', ptp._onFieldFocus);
+    }
+}));
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form/form.browser.js */
 /* begin: ../../libs/bem-core/common.blocks/loader/_type/loader_type_js.js */
 (function(){
 /**
@@ -24635,6 +27100,178 @@ provide(BEMDOM.decl(this.name,
 
 }());
 /* end: ../../blocks/slider/slider.browser.js */
+/* begin: ../../blocks/slider/_custom-controls/slider_custom-controls.browser.js */
+(function(){
+/**
+ * @module slider
+ */
+modules.define('slider',
+['i-bem__dom', 'jquery'],
+function(provide, BEMDOM, $, Slider) {
+
+/**
+* Required slider
+* @exports
+* @class slider
+* @bem
+*/
+Slider.decl({ block : this.name, modName : 'custom-controls', modVal : true },
+{
+onSetMod : {
+    js : {
+        inited : function() {
+            var
+                self = this;
+
+            var
+                params = this.params,
+                defaults = {
+                    direction : 'horizontal',
+                    effect : 'slide',
+                    loop : true,
+                    containerModifierClass : 'slider__slides',
+                    slideClass : 'slider__slide',
+                    slideActiveClass : 'slider__slide_active',
+                    slidePrevClass : 'slider__slide_prev',
+                    slideNextClass : 'slider__slide_next',
+                    nextButton : '.slider__button_next',
+                    prevButton : '.slider__button_prev',
+                    buttonDisabledClass : 'slider__button_disabled',
+                    pagination : '.slider__pagination',
+                    bulletClass : 'slider__bullet',
+                    bulletActiveClass : 'slider__bullet_active',
+                    slidesPerView: 1,
+                    speed : 500,
+                    paginationClickable: true
+                },
+                opts;
+
+            opts = $.extend({}, defaults, params);
+
+            this.swiper = new Swiper(this.elem('inner')[0], opts);
+
+            this._buttonNext = this.elem('button', 'next');
+            this._buttonPrev = this.elem('button', 'prev');
+
+            this._buttonPrev.on('click', function(e) { 
+                this.swiper.slidePrev();
+            }.bind(this));
+
+            this._buttonNext.on('click', function(e) { 
+                this.swiper.slideNext();
+            }.bind(this));
+        }
+    }
+}
+
+});
+
+provide(Slider);
+
+});
+
+}());
+/* end: ../../blocks/slider/_custom-controls/slider_custom-controls.browser.js */
+/* begin: ../../blocks/section/_type/section_type_kindershow.browser.js */
+(function(){
+/**
+ * @module section
+ */
+modules.define('section',
+    ['i-bem__dom', 'jquery'],
+    function(provide, BEMDOM, $, Section) {
+
+/**
+ * Required section
+ * @exports
+ * @class section
+ * @bem
+ */
+Section.decl({ block : this.name, modName : 'type', modVal : 'kindershow' },
+{
+    onElemSetMod : {
+        'slider-wrapper' : {
+            active : {
+                'true' : function(elem) {
+                    this.setMod(this._activeSlider, 'active', false);
+                    this._activeSlider = elem;
+                }
+            }
+        }
+    },
+
+    onSetMod : {
+        js : {
+            inited : function() {
+                this.__base.apply(this, arguments);
+
+                this._sliders = this.findBlocksInside('slider');
+                this._activeSlider = this.findElem('slider-wrapper', 'active', true);
+                this._menuCheckboxes = this.findBlocksInside(this.elem('menu'), 'checkbox');
+                this._imageCheckboxes = this.findBlocksInside(this.elem('sliders'), 'checkbox');
+                this._modal = this.findBlockOn(this.elem('modal'), 'modal');
+
+                this._menuCheckboxes.forEach(function(checkbox, index) {
+                    checkbox.on(
+                        { modName: 'checked', modVal: '*' },
+                        this._onMenuCheckboxChecked,
+                        this
+                    );
+                }, this);
+
+                this._imageCheckboxes.forEach(function(checkbox) {
+                    checkbox.on(
+                        { modName : 'checked', modVal : '*' },
+                        this._onImageCheckboxCheck,
+                        this
+                    );
+                }, this);
+
+                this._menuCheckboxes[0].setMod('checked', true);
+            }
+        }
+    },
+
+    _onMenuCheckboxChecked : function(e) {
+        var
+            _id = e.target.getVal(),
+            checkedSlider = this.findElem('slider-wrapper', 'name', _id);
+
+        if (this._selectedCheckbox) {
+            this._selectedCheckbox.delMod('checked');
+        };
+
+        this._selectedCheckbox = e.target;
+
+        this.setMod(checkedSlider, 'active', true);
+
+        var slider = this.findBlockInside(checkedSlider, 'slider');
+
+        slider.update();
+        slider.swiper.bullets.filter('.slider__bullet_active').removeClass('slider__bullet_active');
+        $(slider.swiper.bullets[slider.swiper.activeIndex]).addClass('slider__bullet_active');
+    },
+
+    _onImageCheckboxCheck : function(e) {
+        if (window.innerWidth > 1279) { return false; };
+
+        var image = e.target.findBlockInside('image').domElem.clone();
+
+        BEMDOM.update(
+            this._modal.elem('image-holder'),
+            image
+        );
+
+        this._modal.setMod('visible');
+    }
+});
+
+provide(Section);
+
+});
+
+}());
+/* end: ../../blocks/section/_type/section_type_kindershow.browser.js */
 /* begin: ../../blocks/section/_type/section_type_flags.browser.js */
 (function(){
 /**
@@ -24684,6 +27321,55 @@ modules.define('section',
 
 }());
 /* end: ../../blocks/section/_type/section_type_flags.browser.js */
+/* begin: ../../blocks/section/_type/section_type_kinderslide.browser.js */
+(function(){
+/**
+ * @module section
+ */
+modules.define('section',
+    ['i-bem__dom'],
+    function(provide, BEMDOM, Section) {
+
+/**
+ * Required section
+ * @exports
+ * @class section
+ * @bem
+ */
+
+Section.decl({ block : this.name, modName : 'type', modVal : 'kinderslide' },
+{
+    onSetMod : {
+        js : {
+            inited : function() {
+                this.__base.apply(this, arguments);
+                this._slider=this.findBlockInside('slider');
+                this._activeSlide = this._slider.findElem('slide', 'active', true);
+                this._otherSlide = {};
+
+                this._controls = this._slider.findElem('controls');
+
+                this._updateControls();
+
+                this._slider.swiper.on('slideChangeStart', this._updateControls.bind(this));
+            }
+        }
+    },
+
+    _updateControls : function(e) {
+        this._otherSlide = this._activeSlide;
+        this._activeSlide = this._slider.findElem('slide', 'active', true);
+        BEMDOM.append(this._slider.findElem(this._activeSlide, 'slide-controls-holder'), this._controls);
+    }
+
+});
+
+provide(Section);
+
+});
+
+}());
+/* end: ../../blocks/section/_type/section_type_kinderslide.browser.js */
 /* begin: ../../blocks/section/_type/section_type_summary-main.browser.js */
 (function(){
 /**
@@ -24743,6 +27429,120 @@ modules.define('section',
 
 }());
 /* end: ../../blocks/section/_type/section_type_summary-main.browser.js */
+/* begin: ../../blocks/section/_name/section_name_safeAndFriendly.browser.js */
+(function(){
+/**
+ * @module section
+ */
+modules.define('section',
+['i-bem__dom'],
+function(provide, BEMDOM, Section) {
+
+/**
+* Required section
+* @exports
+* @class section
+* @bem
+*/
+
+Section.decl({ block : this.name, modName : 'name', modVal : 'safeAndFriendly' },
+{
+onSetMod : {
+    js : {
+        inited : function() {
+            this.__base.apply(this, arguments);
+            this.imageSwitcher = this.findBlockInside('image-switcher');
+            this.buttons = this.elem('slider').find('a');
+            this.buttons.each(function(index, item) {
+                item = $(item);
+                item.on('click', function(e) {
+                    this.imageSwitcher.switch(index);
+                }.bind(this));
+            }.bind(this));
+        }
+    }
+},
+
+});
+
+provide(Section);
+
+});
+
+
+}());
+/* end: ../../blocks/section/_name/section_name_safeAndFriendly.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/form-field/_type/form-field_type_input.browser.js */
+(function(){
+/**
+ * @module form-field
+ */
+modules.define('form-field',
+    function(provide, FormField) {
+/**
+ * Input field
+ *
+ * @exports
+ * @class form-field
+ * @bem
+ */
+FormField.decl({ block : this.name, modName : 'type', modVal : 'input' }, {}, /** @lends form-field_type_input */{
+
+    live : function() {
+        var ptp = this.prototype;
+
+        this.__base();
+        this
+            .liveInitOnBlockInsideEvent('change', 'input', ptp._onControlChange)
+            .liveInitOnBlockInsideEvent({ modName : 'focused', modVal : true }, 'input', ptp._onControlFocus)
+            .liveInitOnBlockInsideEvent({ modName : 'focused', modVal : '' }, 'input', ptp._onControlBlur);
+    }
+});
+
+provide(FormField);
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form-field/_type/form-field_type_input.browser.js */
+/* begin: ../../libs/bem-forms/common.blocks/form-field/_validate/form-field_validate_email.browser.js */
+(function(){
+/**
+ * @module form-field
+ */
+modules.define('form-field',
+    ['validation_email', 'objects'],
+    function(provide, validateEmail, objects, FormField) {
+/**
+ * E-mail form-field validation
+ * @exports
+ * @class form-field
+ * @bem
+ */
+FormField.decl({ modName : 'validate', modVal : 'email' }, /** @lends form-field.prototype */{
+
+    onSetMod : {
+        'js' : {
+            'inited' : function() {
+                this.__base.apply(this, arguments);
+
+                this.params.email && this.setValidationMessages({
+                    email : this.params.email.message
+                });
+
+                this.getValidator().push(validateEmail(this));
+            }
+        }
+    }
+
+});
+
+provide(FormField);
+
+});
+
+}());
+/* end: ../../libs/bem-forms/common.blocks/form-field/_validate/form-field_validate_email.browser.js */
 /* begin: ../../blocks/page/page.browser.js */
 (function(){
 modules.define('page',
@@ -24906,55 +27706,86 @@ _onButtonClicked: function() {
 
 }());
 /* end: ../../blocks/modal-orientation/modal-orientation.browser.js */
-/* begin: ../../blocks/section/_type/section_type_kinderslide.browser.js */
+/* begin: ../../blocks/section/_type/section_type_main.browser.js */
 (function(){
 /**
  * @module section
  */
 modules.define('section',
-    ['i-bem__dom'],
-    function(provide, BEMDOM, Section) {
+    ['i-bem__dom', 'jquery__isInViewport'],
+    function(provide, BEMDOM, $, Section) {
 
-/**
- * Required section
- * @exports
- * @class section
- * @bem
- */
+    /**
+     * Required section
+     * @exports
+     * @class section
+     * @bem
+     */
 
-Section.decl({ block : this.name, modName : 'type', modVal : 'kinderslide' },
-{
-    onSetMod : {
-        js : {
-            inited : function() {
-                this.__base.apply(this, arguments);
-                this._slider=this.findBlockInside('slider');
-                this._activeSlide = this._slider.findElem('slide', 'active', true);
-                this._otherSlide = {};
+    Section.decl({ block : this.name, modName : 'type', modVal : 'main' }, {
+        onSetMod : {
+            js : {
+                inited : function() {
+                    this._lastScrollTop = 0;
+                    this._isScrollInProcess = false;
+                    this._$window = $(window);
 
-                this._controls = this._slider.findElem('controls');
+                    var self = this;
+                    var lastScrollTop = $(window).scrollTop();
 
-                this._updateControls();
+                    this.bindTo('go', 'click', function(e) {
+                        e.preventDefault();
+                        this._scrollTo(self._$window.height());
+                    });
 
-                this._slider.swiper.on('slideChangeStart', this._updateControls.bind(this));
+                    $(window).scroll(function(event){
+                        var st = $(this).scrollTop();
+
+                        if (!self._isScrollInProcess) {
+                            if (st > lastScrollTop && lastScrollTop === 0) {
+                                self._scrollTo(self._$window.height());
+                            }
+
+                            if (st < lastScrollTop && lastScrollTop < self._$window.height()) {
+                                self._scrollTo(0);
+                            }
+                        }
+
+                        lastScrollTop = st;
+                    });
+                }
             }
-        }
-    },
+        },
 
-    _updateControls : function(e) {
-        this._otherSlide = this._activeSlide;
-        this._activeSlide = this._slider.findElem('slide', 'active', true);
-        BEMDOM.append(this._slider.findElem(this._activeSlide, 'slide-controls-holder'), this._controls);
-    }
+        _scrollTo: function(offset) {
+            var self = this;
+            self._isScrollInProcess = true;
 
-});
+            $('html, body').animate({
+                scrollTop : offset
+            }, '1000', 'swing');
+
+            $(window).on("mousewheel", disableUserScroll);
+
+            setTimeout(function() {
+                $(window).off('mousewheel', disableUserScroll);
+                self._isScrollInProcess = false;
+            }, 1000);
+
+            function disableUserScroll(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        },
+    });
 
 provide(Section);
 
 });
 
+
 }());
-/* end: ../../blocks/section/_type/section_type_kinderslide.browser.js */
+/* end: ../../blocks/section/_type/section_type_main.browser.js */
 /* begin: ../../blocks/watch-video/watch-video.browser.js */
 (function(){
 modules.define('watch-video', ['i-bem__dom'], function(provide, BEMDOM) {
@@ -25006,204 +27837,6 @@ provide(BEMDOM.decl(this.name, {
 
 }());
 /* end: ../../blocks/watch-video/watch-video.browser.js */
-/* begin: ../../blocks/section/_name/section_name_controlled.browser.js */
-(function(){
-/**
- * @module section
- */
-modules.define('section',
-    ['i-bem__dom'],
-    function(provide, BEMDOM, Section) {
-
-/**
- * Required section
- * @exports
- * @class section
- * @bem
- */
-
-Section.decl({ block : this.name, modName : 'name', modVal : 'controlled' },
-{
-    onSetMod : {
-        js : {
-            inited : function() {
-                this.__base.apply(this, arguments);
-                this._slider.setMod(this._activeSlide, 'zIndex', 'enabled');
-
-                if (this.isChrome()) {
-                    this._slider.swiper.on('slideChangeStart', this._updateZIndex.bind(this));
-                };
-            }
-        }
-    },
-
-    _updateZIndex : function(e) {
-        setTimeout(function() {
-            this._slider.delMod(this._activeSlide, 'zIndex', 'disabled');
-            this._slider.setMod(this._activeSlide, 'zIndex', 'enabled');
-
-            this._slider.delMod(this._otherSlide, 'zIndex', 'enabled');
-            this._slider.setMod(this._otherSlide, 'zIndex', 'disabled');
-        }.bind(this), 700)
-    },
-
-    isChrome : function() {
-        var isChromium = window.chrome,
-            winNav = window.navigator,
-            vendorName = winNav.vendor,
-            isOpera = winNav.userAgent.indexOf("OPR") > -1,
-            isIEedge = winNav.userAgent.indexOf("Edge") > -1,
-            isIOSChrome = winNav.userAgent.match("CriOS");
-
-        if(isIOSChrome){
-            return true;
-        } else if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-});
-
-provide(Section);
-
-});
-
-
-}());
-/* end: ../../blocks/section/_name/section_name_controlled.browser.js */
-/* begin: ../../blocks/section/_name/section_name_safeAndFriendly.browser.js */
-(function(){
-/**
- * @module section
- */
-modules.define('section',
-['i-bem__dom'],
-function(provide, BEMDOM, Section) {
-
-/**
-* Required section
-* @exports
-* @class section
-* @bem
-*/
-
-Section.decl({ block : this.name, modName : 'name', modVal : 'safeAndFriendly' },
-{
-onSetMod : {
-    js : {
-        inited : function() {
-            this.__base.apply(this, arguments);
-            this.imageSwitcher = this.findBlockInside('image-switcher');
-            this.buttons = this.elem('slider').find('a');
-            this.buttons.each(function(index, item) {
-                item = $(item);
-                item.on('click', function(e) {
-                    this.imageSwitcher.switch(index);
-                }.bind(this));
-            }.bind(this));
-        }
-    }
-},
-
-});
-
-provide(Section);
-
-});
-
-
-}());
-/* end: ../../blocks/section/_name/section_name_safeAndFriendly.browser.js */
-/* begin: ../../blocks/nav-menu-burger/nav-menu-burger.browser.js */
-(function(){
-modules.define('nav-menu-burger',
-    ['i-bem__dom', 'next-tick', 'jquery'],
-    function(provide, BEMDOM, nextTick, $) {
-
-provide(BEMDOM.decl(this.name,
-{
-    onSetMod : {
-        js : {
-            inited : function() {
-                this.modal = this.findBlockInside('modal');
-                this.button = this.findBlockOn(this.elem('button'), 'checkbox-animated');
-                this.static = this.elem('static');
-                // this.modalButton = this.findBlockOn(this.elem('close'), 'checkbox-animated');
-
-                this._hackMSIE()
-
-                this.button.on(
-                    { modName : 'checked', modVal : '*'},
-                    this._onChecked,
-                    this
-                )
-                this.modal.on(
-                    { modName : 'visible', modVal : '*' },
-                    this._onModal,
-                    this
-                )
-            }
-        }
-    },
-
-    _hackMSIE : function () {
-        this._offset = this.domElem.offset();
-        var self = this;
-        var rt = ($(window).width() - (self.static.offset().left + self.static.outerWidth()));
-
-        this.static.css({
-            position : 'fixed',
-            right : rt,
-            top : this._offset.top - $(window).scrollTop(),
-        });
-
-        this.static.css({
-            position: '',
-            right : '',
-            top : ''
-        })
-    },
-
-    _onChecked : function (e, data) {
-        var val = data.modVal;
-        this._offset = this.domElem.offset();
-        var self = this;
-        var rt = ($(window).width() - (self.static.offset().left + self.static.outerWidth()));
-
-        if(val) {
-            this.static.css({
-                position : 'fixed',
-                right: rt,
-                top : this._offset.top - $(window).scrollTop(),
-            });
-        } else {
-            this.static.css({
-                position: '',
-                right : rt,
-                top : ''
-            })
-        }
-        this.modal.setMod('visible', val);
-        !!val ? $('body').css('overflow', 'visible') : $('body').css('overflow', '');
-    },
-
-    _onModal : function (e, data) {
-        var val = data.modVal;
-        var self = this;
-        this.setMod('modal', val);
-
-        self.button.setMod('checked', val)
-
-    },
-
-}));
-
-});
-
-}());
-/* end: ../../blocks/nav-menu-burger/nav-menu-burger.browser.js */
 /* begin: ../../blocks/page/_view/page_view_site-summary.browser.js */
 (function(){
 modules.define(
@@ -25424,3 +28057,1073 @@ provide(Page);
 
 }());
 /* end: ../../blocks/page/_view/page_view_site-summary.browser.js */
+/* begin: ../../blocks/section/_name/section_name_controlled.browser.js */
+(function(){
+/**
+ * @module section
+ */
+modules.define('section',
+    ['i-bem__dom'],
+    function(provide, BEMDOM, Section) {
+
+/**
+ * Required section
+ * @exports
+ * @class section
+ * @bem
+ */
+
+Section.decl({ block : this.name, modName : 'name', modVal : 'controlled' },
+{
+    onSetMod : {
+        js : {
+            inited : function() {
+                this.__base.apply(this, arguments);
+                this._slider.setMod(this._activeSlide, 'zIndex', 'enabled');
+
+                if (this.isChrome()) {
+                    this._slider.swiper.on('slideChangeStart', this._updateZIndex.bind(this));
+                };
+            }
+        }
+    },
+
+    _updateZIndex : function(e) {
+        setTimeout(function() {
+            this._slider.delMod(this._activeSlide, 'zIndex', 'disabled');
+            this._slider.setMod(this._activeSlide, 'zIndex', 'enabled');
+
+            this._slider.delMod(this._otherSlide, 'zIndex', 'enabled');
+            this._slider.setMod(this._otherSlide, 'zIndex', 'disabled');
+        }.bind(this), 700)
+    },
+
+    isChrome : function() {
+        var isChromium = window.chrome,
+            winNav = window.navigator,
+            vendorName = winNav.vendor,
+            isOpera = winNav.userAgent.indexOf("OPR") > -1,
+            isIEedge = winNav.userAgent.indexOf("Edge") > -1,
+            isIOSChrome = winNav.userAgent.match("CriOS");
+
+        if(isIOSChrome){
+            return true;
+        } else if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+});
+
+provide(Section);
+
+});
+
+
+}());
+/* end: ../../blocks/section/_name/section_name_controlled.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-privacy.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Page) {
+        Page.decl({ modName : 'view', modVal : 'site-privacy'}, {
+    
+            onSetMod : {
+                js : {
+                    inited : function() {
+                        this.navItems = this.elem('menu-link');
+                        var navItems = this.navItems;
+
+                        $(document).ready(function() {
+                            var hash = window.location.hash;                        
+    
+                            if (hash) {
+                                var p = $(hash);
+    
+                                $('html, body').animate({
+                                    scrollTop : p.offset().top - 60
+                                }, '1000', 'swing');
+                                
+                            }
+                        });
+
+                        $.each(navItems, function(index, item) {
+                            var pair = $(item).attr('pair');
+
+                            this.bindTo($(item), 'click', function(e) {
+                                e.preventDefault();
+
+                                var p = $(String(pair));
+
+                                $('html, body').animate({
+                                    scrollTop : p.offset().top - 60
+                                }, '1000', 'swing');
+                                
+                            })
+                        }.bind(this))
+                    }
+                }
+            },
+
+    
+        })
+    
+        provide(Page);
+    })
+    
+}());
+/* end: ../../blocks/page/_view/page_view_site-privacy.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-licence-user.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Page) {
+    Page.decl({ modName : 'view', modVal : 'site-licence-user'}, {
+
+        onSetMod : {
+            js : {
+                inited : function() {
+                    this.navItems = this.elem('menu-link');
+                    var navItems = this.navItems;
+
+                    $(document).ready(function() {
+                        var hash = window.location.hash;                        
+
+                        if (hash) {
+                            var p = $(hash);
+
+                            $('html, body').animate({
+                                scrollTop : p.offset().top - 60
+                            }, '1000', 'swing');
+                            
+                        }
+                    });
+
+                    $.each(navItems, function(index, item) {
+                        var pair = $(item).attr('pair');
+
+                        this.bindTo($(item), 'click', function(e) {
+                            e.preventDefault();
+
+                            window.history.pushState("", "", pair);
+
+                            var p = $(String(pair));
+
+                            $('html, body').animate({
+                                scrollTop : p.offset().top - 60
+                            }, '1000', 'swing');
+                            
+                        })
+                    }.bind(this))
+                }
+            }
+        },
+
+
+    })
+
+    provide(Page);
+})
+
+}());
+/* end: ../../blocks/page/_view/page_view_site-licence-user.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-licence-business.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Page) {
+    Page.decl({ modName : 'view', modVal : 'site-licence-business'}, {
+
+        onSetMod : {
+            js : {
+                inited : function() {
+                    this.navItems = this.elem('menu-link');
+                    var navItems = this.navItems;
+
+                    $(document).ready(function() {
+                        var hash = window.location.hash;                        
+
+                        if (hash) {
+                            var p = $(hash);
+
+                            $('html, body').animate({
+                                scrollTop : p.offset().top - 60
+                            }, '1000', 'swing');
+                            
+                        }
+                    });
+
+                    $.each(navItems, function(index, item) {
+                        var pair = $(item).attr('pair');
+
+                        this.bindTo($(item), 'click', function(e) {
+                            e.preventDefault();
+
+                            var p = $(String(pair));
+
+                            $('html, body').animate({
+                                scrollTop : p.offset().top - 60
+                            }, '1000', 'swing');
+                            
+                        })
+                    }.bind(this))
+                }
+            }
+        },
+
+
+    })
+
+    provide(Page);
+})
+
+}());
+/* end: ../../blocks/page/_view/page_view_site-licence-business.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-kiosk.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery__fullpage'], function(provide, BEMDOM, $, Page) {
+    
+    function isIEMobileTouchDevice() {
+        return (('ontouchstart' in window)
+            || (navigator.maxTouchPoints > 0)
+            || (navigator.msMaxTouchPoints > 0)) &&
+            window.innerWidth <= 1280 &&
+            window.innerHeight <= 660 &&
+            navigator.userAgent.match(/Edge/);
+    }
+        
+        Page.decl({ modName : 'view', modVal : 'site-kiosk'}, {
+    
+            onSetMod : {
+                js : {
+                    inited : function() {
+                        this.__base();
+                        var self = this;
+                        this.goDown = this.elem('go', 'dir', 'down');
+                        this.goUp = this.elem('go', 'dir', 'up');
+
+                        this._setFullPageJs();
+
+                        window.addEventListener("orientationchange", function() {
+                            this._setFullPageJs();
+                        }.bind(this), false);
+                    }
+    
+                }
+            },
+
+            _setFullPageJs: function() {
+                if (window.innerHeight < window.innerWidth) {
+                    this._createFullPageJs();
+                } else {
+                    this._destroyFullPageJs();
+                }
+            },
+
+            _createFullPageJs: function() {
+                $(document).ready(function() {
+                    $('.page__inner').fullpage({
+                        scrollBar: false,
+                        scrollingSpeed : 500,
+                        fitToSection: false,
+                        easingcss3: "cubic-bezier(0.645, 0.045, 0.355, 1)",
+                        bigSectionsDestination : 'top',
+                        sectionSelector: '.step',
+                        anchors:['main', 'values']
+                    });
+                }.bind(this));
+
+                this.bindTo(this.goDown, 'click', function(e) {
+                    e.preventDefault();
+                    $.fn.fullpage.moveSectionDown();
+                });
+
+                this.bindTo(this.goUp, 'click', function(e) {
+                    e.preventDefault();
+                    $.fn.fullpage.moveSectionUp();
+                });
+            },
+
+            _destroyFullPageJs: function() {
+                if (!!$.fn.fullpage.destroy) {
+                    $.fn.fullpage.destroy('all');
+                }
+            }
+    
+        })
+    
+        provide(Page);
+    })
+}());
+/* end: ../../blocks/page/_view/page_view_site-kiosk.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-download.browser.js */
+(function(){
+modules.define(
+    'page',
+    ['jquery'],
+    function(provide, $, Page) {
+
+Page.decl({ modName : 'view', modVal : 'site-download' }, {
+    onSetMod : {
+        js : {
+            inited : function() {
+                var USER_AGENT = window.navigator && window.navigator.userAgent || '';
+                var IS_CHROME = USER_AGENT.indexOf("Chrome") > -1;
+
+                console.log('IS_CHROME', IS_CHROME)
+
+                // Opera 8.0+
+                var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+                // Firefox 1.0+
+                var isFirefox = typeof InstallTrigger !== 'undefined';
+                // Safari 3.0+ "[object HTMLElementConstructor]"
+                var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+                // Internet Explorer 6-11
+                var isIE = /*@cc_on!@*/false || !!document.documentMode;
+                // Edge 20+
+                var isEdge = !isIE && !!window.StyleMedia;
+                // Chrome 1+
+                var isChrome = !!window.chrome && !!window.chrome.webstore;
+                // Blink engine detection
+                var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+                var l = window.location.href;
+                var query = l.split('?')[1] || null;
+                var prev = window.location.pathname.split( '/' )[3];
+
+                var $button = $('.page__subtitle a');
+                var curr = $button.attr('href');
+                var href = curr;
+
+                if (prev || query) {
+                    href = href + '/';
+                }
+
+                if (prev) {
+                    href = href + prev;
+                }
+
+                if (query) {
+                    href = href + '?' + query;
+                }
+
+                $button.attr('href', href);
+
+                // const IS_FINAL_PAGE = window.location.href.indexOf('get') !== -1;
+
+                // if (!IS_FINAL_PAGE) {
+                //     setTimeout(function() {
+                //         window.location = href;
+                //     }.bind(this), 1000);
+                // } else {
+                //     setTimeout(function() {
+                //         this.setMod('downloaded');
+                //     }.bind(this), 1000);
+                // }
+
+                var $link = $('.page__subheader .page__subtitle > a');
+                this.bindTo($link, 'click', this.onDownloadClick.bind(this));
+
+                setTimeout(function() {
+                    window.location = href;
+                    this.setMod('downloaded');
+                }.bind(this), 1000);
+
+
+                var $stepImg = $(this.findBlockInside('step__image').domElem);
+                var $downloadImg = this.elem('download-image');
+
+                var patchImgUrl = function($img, browser) {
+                    var curr = $img.attr('src');
+                    const index = curr.indexOf('.png');
+                    curr = curr.slice(0, index + 1) + browser + curr.slice(index);
+                    $img.attr('src', curr);
+                };
+
+                if (IS_CHROME) {
+                    var $stepImage2 = $(this.findBlockInside('step_number_2').findBlockInside('step__image').domElem);
+
+                    patchImgUrl($stepImg, 'chrome');
+                    patchImgUrl($stepImage2, 'chrome');
+                    patchImgUrl($downloadImg, 'chrome');
+                    this.setMod('chrome');
+                } else if (isFirefox) {
+                    patchImgUrl($stepImg, 'ff');
+                    patchImgUrl($downloadImg, 'ff');
+                    this.setMod('ff');
+                } else if (isIE) {
+                    patchImgUrl($stepImg, 'ie');
+                    patchImgUrl($downloadImg, 'ie');
+                    this.setMod('ie');
+                } else if (isEdge) {
+                    patchImgUrl($stepImg, 'edge');
+                    patchImgUrl($downloadImg, 'edge');
+                    this.setMod('edge');
+                }
+            }
+        }
+    },
+
+    onDownloadClick : function() {
+        console.log('set mod!');
+        this.setMod('downloaded');
+    }
+})
+
+provide(Page);
+})
+
+
+}());
+/* end: ../../blocks/page/_view/page_view_site-download.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-preschools.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Page) {
+        Page.decl({ modName : 'view', modVal : 'site-preschools'}, {
+            onSetMod : {
+                js : {
+                    inited : function() {
+                        this._$snippets = $('.step__snippets');
+                        this._startScrollObservance();
+
+                        if (this.findBlockInside('page').hasMod('view', 'site-preschools')) {
+                            $.get('http://new.magicdesktop.com/data/schools.json', function(res) {
+                                var data = res.data;
+
+                                try {
+                                    data.forEach(function(item) {
+                                        try {
+                                            item = this._normalizeData(item);
+                                            var $item = this._buildSnippet(item);
+                                            this._$snippets.append($item);
+                                        } catch(err) {
+                                            console.log('Failure at creating snippet', err);
+                                        }
+                                    }.bind(this));
+                                } catch(err) {
+                                    console.log('Failure at creating snippets. Using local instead.');
+                                    this._buildMock();
+                                }
+                            }.bind(this)).fail(function(err) {
+                                console.log('Failure retrieving remote snippets. Using local instead.', err);
+                                this._buildMock();
+                            }.bind(this));
+                        }
+                    }
+                }
+            },
+
+            _normalizeData: function(raw) {
+                var data = {};
+                var info = {};
+                var description = {};
+                var picture = null;
+
+                info = {
+                    img: raw.logo,
+                    text: '<br>Location: <b>' + raw.location.city + ' / ' + raw.location.country + '</b>' + '<br>Type: <b>' + raw.type.join(', ') + "</b> <br><a class='b-link' href='" + raw.url + "' target='_blank'>" + raw.url + '</a>',
+                };
+
+                description = {
+                    title: raw.title,
+                    text: raw.description,
+                };
+
+                picture = raw.image,
+
+                data = {
+                    info: info,
+                    description: description,
+                    picture: picture,
+                };
+
+                return data;
+            },
+
+            _buildSnippet: function(data) {
+                var info = data.info;
+                var description = data.description;
+                var picture = data.picture;
+                var $descriptionTitle = $("<div class='snippet__title'></div>").text(description.title);
+                var $descriptionText = $("<div class='snippet__text'></div>").text(description.text);
+                var $picture = $("<img class='image snippet__picture'>").attr('src', picture);
+                var $infoImage = $("<img class='image snippet__logo'>").attr('src', info.img);
+                var $infoText = info.text;
+                var $info = $("<div class='snippet__info'></div>").append($infoImage, $infoText);
+                var $description = $("<div class='snippet__description'></div>").append($descriptionTitle, $descriptionText);
+                var $snippet = $("<div class='snippet'></div>").append($info, $description, $picture);
+
+                return $snippet;
+            },
+
+            _buildMock: function(data) {
+                var data = this._getData();
+
+                data.forEach(function(item) {
+                    var $item = this._buildSnippet(item);
+                    this._$snippets.append($item);
+                }.bind(this));
+            },
+
+            _getData: function() {
+                return [
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/science.logo.png',
+                            text: '<br>Location: <b>North Carolina / United States</b><br>Type: <b>Elementary, After-School, Preschool, Camps</b><br><a class="b-link" href="http://www.sciencefun.org/" target="_blank">http://www.sciencefun.org/</a>'
+                        },
+                        description: {
+                            title: 'SCIENCE FUN For Everyone! FCK',
+                            text: 'NC Science based 501(c)(3) nonprofit organization dedicated to promoting and funding hands-on, inquiry-based Science and educational experiences through creative and innovative teaching methods. Over 80,000 students experience the FUN science programs annually!'
+                        },
+                        picture: '/assets/images/preschools/snippets/science.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/napier.logo.png',
+                            text: '<br>Location: <b>Napier / New Zeland</b><br>Type: <b>Kindergartens</b><br><a class="b-link" href="http://www.napierkindergartens.co.nz/" target="_blank">http://www.napierkindergartens.co.nz/</a>'
+                        },
+                        description: {
+                            title: 'Napier Kindergarten Association',
+                            text: 'The Napier Kindergarten Association is an incorporated society which oversees the management of 16 Kindergartens in Napier, Wairoa and Haumoana, delivering early childhood education to 2 to 5 year olds as well as the Parent as First Teachers (PAFT) program for Napier and Hastings, delivering in home parent education for 0 to 3 year olds.'
+                        },
+                        picture: '/assets/images/preschools/snippets/napier.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/iftin.logo.png',
+                            text: '<br>Type: <b>Childcare Center</b><br><a class="b-link" href="http://www.iftingroup.com/" target="_blank">http://www.iftingroup.com/</a>'
+                        },
+                        description: {
+                            title: 'IFTIN Childcare Center',
+                            text: 'IFTIN Childcare Center was established to provide quality, loving care for children ages 6wks – 12 years old. The staff recognizes the importance of balanced growth so they provide opportunities for mental, physical, and emotional growth through a variety of creative experiences.'
+                        },
+                        picture: '/assets/images/preschools/snippets/iftin.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/child-parents-centers.logo.png',
+                            text: '<br>Location: <b>Arizona / United States</b><br>Type: <b>Head start program</b><br><a class="b-link" href="http://childparentcenters.org/" target="_blank">http://childparentcenters.org/</a>'
+                        },
+                        description: {
+                            title: 'Child-Parent Centers',
+                            text: 'Was founded in 1967 in Tucson Arizona. Provides Head Start services to children and families in Pima, Cochise, Graham, Greenlee, and Santa Cruz counties.'
+                        },
+                        picture: '/assets/images/preschools/snippets/child-parents-centers.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/alton-convent-school.logo.png',
+                            text: '<br>Location: <b>Hampshire / United Kingdom</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.altonconvent.org.uk/" target="_blank">http://www.altonconvent.org.uk/</a>'
+                        },
+                        description: {
+                            title: 'Alton Convent School',
+                            text: 'The Preparatory School is an amazing place to learn for boys and girls up to 11. It is warm, friendly, high achieving and huge fun.'
+                        },
+                        picture: '/assets/images/preschools/snippets/alton-convent-school.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/child-development-center.logo.png',
+                            text: '<br>Location: <b>Edmond / United States</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.mysmallwonders.com/" target="_blank">http://www.mysmallwonders.com/</a>'
+                        },
+                        description: {
+                            title: 'My Small Wonders. Edmond’s Premier Child Development Center',
+                            text: 'At My Small Wonders we realize that each child is unique and providing them with a positive early learning experience is a critical step in leading them down a path of educational and social success. Throughout our years of research, development and working with numerous nationally recognized curriculum programs one thing has always remained true… children have an insatiable appetite for knowledge when they have learning experiences that are engaging and enjoyable.'
+                        },
+                        picture: '/assets/images/preschools/snippets/child-development-center.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/lollipop-educare.logo.png',
+                            text: '<br>Location: <b>Auckland, Waikato, Hawkes Bay / Manawatu, Christchurch, Wellington / New Zeland</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.lollipopseducare.co.nz/" target="_blank">http://www.lollipopseducare.co.nz/</a>'
+                        },
+                        description: {
+                            title: 'Lollipops Educare',
+                            text: 'Programme planning at Lollipops Educare is based on the four learning principles of the New Zealand Early Childhood Curriculum – Te Whaariki. These are: Empowerment, Holistic Development, Family and Community and Relationships. These four principles are designed to help your child become a confident learner with strong relationship skills – in other words your child soaks up great skills all while having great fun!'
+                        },
+                        picture: '/assets/images/preschools/snippets/lollipop-educare.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/habitotos-care-center.logo.png',
+                            text: '<br>Location: <b>Medford, Middle Island / United States</b><br>Type: <b>Elementary, Preschool, Camps</b><br><a class="b-link" href="http://www.habitotschildcare.com/" target="_blank">http://www.habitotschildcare.com/</a>'
+                        },
+                        description: {
+                            title: 'Habitots Preschool and Child Care Center',
+                            text: 'Our curriculum is a blend of highly supported approaches to learning and is aligned with the Core Body of Knowledge expectations from NYS Early Learning Guidelines. Focusing on developmental milestones reached between birth and 5 years of age, our program is based on accepted best practices that use assessment scales that encompass the development of the whole child, better readying them for Kindergarten and beyond.'
+                        },
+                        picture: '/assets/images/preschools/snippets/habitotos-care-center.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/st-olave.logo.png',
+                            text: '<br>Location: <b>London / United Kingdom</b><br>Type: <b>Elementary, After-School, Preschool, Camps</b><br><a class="b-link" href="http://www.stolaves.org.uk/" target="_blank">http://www.stolaves.org.uk/</a>'
+                        },
+                        description: {
+                            title: "St Olave's Prep School",
+                            text: 'Our child-centred approach to education ensures that St Olave’s pupils are nurtured, encouraged, challenged and rewarded.'
+                        },
+                        picture: '/assets/images/preschools/snippets/st-olave.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/sawtry-infant-school.logo.png',
+                            text: '<br>Location: <b>Sawtry / United Kingdom</b><br>Type: <b>Elementary, Preschool</b><br><a class="b-link" href="http://www.sawtry-inf.cambs.sch.uk/" target="_blank">http://www.sawtry-inf.cambs.sch.uk/</a>'
+                        },
+                        description: {
+                            title: 'Sawtry Infant School',
+                            text: 'At Sawtry Infant School, we believe that the early years of school are all important, and we aim to work in partnership with parents to ensure that the children receive an excellent start to their education.'
+                        },
+                        picture: '/assets/images/preschools/snippets/sawtry-infant-school.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/st-davids-coop-nursery-school.logo.png',
+                            text: '<br>Location: <b>Ontario / Canada</b><br>Type: <b>Preschool</b><br><a class="b-link" href="http://www.stdavidsnurseryschool.org/" target="_blank">http://www.stdavidsnurseryschool.org/</a>'
+                        },
+                        description: {
+                            title: "St David's Co-op Nursery School",
+                            text: 'Welcome to St. David’s Cooperative Nursery School! Our programs are designed to provide children with the skills necessary to successfully transition into junior kindergarten with two, three and five day junior and senior classes as well as our brand new 2 day toddler class. Our focus is on the concept of the whole child, emphasizing each child’s social, physical and mental development.'
+                        },
+                        picture: '/assets/images/preschools/snippets/st-davids-coop-nursery-school.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/great-expectations-childcare.logo.png',
+                            text: '<br>Location: <b>West Palm Beach / United States</b><br>Type: <b>Preschool</b><br><a class="b-link" href="http://www.gechildcare.com/" target="_blank">http://www.gechildcare.com/</a>'
+                        },
+                        description: {
+                            title: 'Great Expectations Childcare',
+                            text: 'We put a lot of emphasis on “play” during the pre-school years as play is a natural way for exploring new things and gaining knowledge about the world around them. A child’s thinking goes through stages, each built on skills and information obtained and retained from the preceding one. We feel that your children will retain more of what they learn if their minds have been stimulated in a way that appeals to them.'
+                        },
+                        picture: '/assets/images/preschools/snippets/great-expectations-childcare.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/southwest-human-development.logo.png',
+                            text: '<br>Location: <b>Phoenix / United States</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.swhd.org/" target="_blank">http://www.swhd.org/</a>'
+                        },
+                        description: {
+                            title: 'Southwest Human Development',
+                            text: 'Southwest Human Development is Arizona’s largest nonprofit dedicated to early childhood development. Since our founding in 1981, Southwest Human Development has been a leader in providing services for children ages birth to 5 and their families.'
+                        },
+                        picture: '/assets/images/preschools/snippets/southwest-human-development.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/castle-montessori-schools.logo.png',
+                            text: '<br>Location: <b>Carrollton, Flower Mound, McKinney, Frisco, Plano / United States</b><br>Type: <b>Nursery, Elementary, After-School, Preschool, Camp</b><br><a class="b-link" href="http://www.castlemontessori.com/" target="_blank">http://www.castlemontessori.com/</a>'
+                        },
+                        description: {
+                            title: 'Castle Montessori Schools',
+                            text: "Castle Montessori's academic philosophy is based on authentic Montessori principles for students who are toddlers (12 months+) to lower elementary age (3rd Grade). Montessori principles rely on core values that guide the daily practice of the school, focusing on independent learning activities, developmental curriculum, and a respectful community of learners engaged within a carefully prepared environment."
+                        },
+                        picture: '/assets/images/preschools/snippets/castle-montessori-schools.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/mall-nursery-and-creche.logo.png',
+                            text: '<br>Location: <b>Luton / United Kingdom</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.themallnurseryandcreche.org.uk/" target="_blank">http://www.themallnurseryandcreche.org.uk/</a>'
+                        },
+                        description: {
+                            title: 'The Mall Nursery and Creche',
+                            text: 'We pride ourselves on being able to offer flexible affordable childcare to meet the varied needs of our families. From a few hours each week to full day care, times and days can be booked to suit your requirements. Times can be booked in ½ hour periods. If you only require a few hours here and there this is all you have to pay for. We open throughout the year, (not just term time) and are open on Saturdays too!'
+                        },
+                        picture: '/assets/images/preschools/snippets/mall-nursery-and-creche.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/lawrence-county-early-childhood-academy.logo.png',
+                            text: '<br>Location: <b>Ironton / United States</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://headstartworks.org/" target="_blank">http://headstartworks.org/</a>'
+                        },
+                        description: {
+                            title: 'Lawrence County Early Childhood Academy',
+                            text: "We believe school readiness begins before birth. Therefore, our highly-qualified and nurturing staff provides comprehensive services for prenatal mothers, infants, toddlers, preschoolers, and their families. We strive to enrich families' lives and empower them to advocate for their own families by providing tailored services and collaborating with community partners."
+                        },
+                        picture: '/assets/images/preschools/snippets/lawrence-county-early-childhood-academy.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/laurence-school-district.logo.png',
+                            text: '<br>Location: <b>Laurel / United States</b><br>Type: <b>Elementary, Middle School, High School</b><br><a class="b-link" href="http://www.laurelschools.org/" target="_blank">http://www.laurelschools.org/</a>'
+                        },
+                        description: {
+                            title: 'Laurel School District',
+                            text: 'The four pillars of NCLB are to provide stronger accountability for results, more freedom for states and communities, proven education methods, and more choices for parents.'
+                        },
+                        picture: '/assets/images/preschools/snippets/laurence-school-district.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/crosslake-community-school.logo.png',
+                            text: '<br>Location: <b>Crosslake / United States</b><br>Type: <b>Elementary, Middle school, High school</b><br><a class="b-link" href="http://www.crosslakekids.org/" target="_blank">http://www.crosslakekids.org/</a>'
+                        },
+                        description: {
+                            title: 'Crosslake Community School',
+                            text: 'Crosslake Community School is a K-12 public charter school. Our 148 students to 27 adults (with daily student contact) ratio is part of our mission. Our Mission: To grow environmentally aware, community conscious learners of excellence.'
+                        },
+                        picture: '/assets/images/preschools/snippets/crosslake-community-school.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/over-rainbow-playschool-community-centre.logo.png',
+                            text: '<br>Location: <b>Horsham / Great Britain</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://otrplayschool.com/" target="_blank">http://otrplayschool.com/</a>'
+                        },
+                        description: {
+                            title: 'Over The Rainbow Playschool Holbrook Community Centre',
+                            text: 'Over the Rainbow is a privately owned playschool for children aged from 2 - school age.We believe we offer a warm, friendly environment which enables all children to learn and develop, to become sociable, independent and be prepared for school.'
+                        },
+                        picture: '/assets/images/preschools/snippets/over-rainbow-playschool-community-centre.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/st-marys-nursery-horsham.logo.png',
+                            text: '<br>Location: <b>Horsham / Great Britain</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.stmarysnurseryhorsham.co.uk/" target="_blank">http://www.stmarysnurseryhorsham.co.uk/</a>'
+                        },
+                        description: {
+                            title: "St. Mary's Nursery, Horsham",
+                            text: "At St. Mary's Nursery, Horsham we offer a fun, stimulating, safe and spacious environment for children aged from two and a half to five years old."
+                        },
+                        picture: '/assets/images/preschools/snippets/st-marys-nursery-horsham.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/rainbow-pre-school.logo.png',
+                            text: '<br>Location: <b>Knockholt / United Kingdom</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://www.rainbowpre-schoolknockholt.co.uk/" target="_blank">http://www.rainbowpre-schoolknockholt.co.uk/</a>'
+                        },
+                        description: {
+                            title: 'Rainbow Pre-school',
+                            text: 'Play underpins all our curriculum planning with a balance between child initiated and adult led activities. It is through play whether spontaneous or supported by an adult that children develop intellectually, creatively, physically, socially and emotionally.'
+                        },
+                        picture: '/assets/images/preschools/snippets/rainbow-pre-school.png'
+                    },
+                    {
+                        info: {
+                            img: '/assets/images/preschools/snippets/kiddies-kingdom.logo.png',
+                            text: '<br>Location: <b>Bedfordshire / United Kingdom</b><br>Type: <b>Nursery and Prep School</b><br><a class="b-link" href="http://kiddieskingdom.co.uk/" target="_blank">http://kiddieskingdom.co.uk/</a>'
+                        },
+                        description: {
+                            title: 'Kiddies Kingdom',
+                            text: 'At Kiddies Kingdom we recognise that each child is different, with his/her own interests, abilities and developing view of the world. We respect the many different forms of family life that children may experience as well as their social and cultural backgrounds.'
+                        },
+                        picture: '/assets/images/preschools/snippets/kiddies-kingdom.png'
+                    },
+                ];
+            },
+
+            _startScrollObservance: function() {
+                this._lastScrollTop = 0;
+                this._isScrollInProcess = false;
+                this._$window = $(window);
+
+                var self = this;
+                var lastScrollTop = $(window).scrollTop();
+
+                this.bindTo('go_dir_down', 'click', function(e) {
+                    e.preventDefault();
+                    this._scrollTo(self._$window.height());
+                });
+
+                $(window).scroll(function(event){
+                    var st = $(this).scrollTop();
+
+                    if (!self._isScrollInProcess) {
+                        if (st > lastScrollTop && lastScrollTop === 0) {
+                            self._scrollTo(self._$window.height());
+                        }
+
+                        if (st < lastScrollTop && lastScrollTop < self._$window.height()) {
+                            self._scrollTo(0);
+                        }
+                    }
+
+                    lastScrollTop = st;
+                });
+            },
+
+            _scrollTo: function(offset) {
+                var self = this;
+                self._isScrollInProcess = true;
+
+                $('html, body').animate({
+                    scrollTop : offset
+                }, '1000', 'swing');
+
+                $(window).on("mousewheel", disableUserScroll);
+
+                setTimeout(function() {
+                    $(window).off('mousewheel', disableUserScroll);
+                    self._isScrollInProcess = false;
+                }, 1000);
+
+                function disableUserScroll(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            },
+        })
+
+        provide(Page);
+    })
+
+}());
+/* end: ../../blocks/page/_view/page_view_site-preschools.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-touch-tables.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery__fullpage'], function(provide, BEMDOM, $, Page) {
+    
+    function isIEMobileTouchDevice() {
+        return (('ontouchstart' in window)
+            || (navigator.maxTouchPoints > 0)
+            || (navigator.msMaxTouchPoints > 0)) &&
+            window.innerWidth <= 1280 &&
+            window.innerHeight <= 660 &&
+            navigator.userAgent.match(/Edge/);
+    }
+        
+        Page.decl({ modName : 'view', modVal : 'site-touch-tables'}, {
+    
+            onSetMod : {
+                js : {
+                    inited : function() {
+                        this.__base();
+                        var self = this;
+                        this.goDown = this.elem('go', 'dir', 'down');
+                        this.goUp = this.elem('go', 'dir', 'up');
+
+                        this._setFullPageJs();
+
+                        window.addEventListener("orientationchange", function() {
+                            this._setFullPageJs();
+                        }.bind(this), false);
+                    }
+    
+                }
+            },
+
+            _setFullPageJs: function() {
+                if (window.innerHeight < window.innerWidth) {
+                    this._createFullPageJs();
+                } else {
+                    this._destroyFullPageJs();
+                }
+            },
+
+            _createFullPageJs: function() {
+                $(document).ready(function() {
+                    $('.page__inner').fullpage({
+                        scrollBar: false,
+                        scrollingSpeed : 500,
+                        fitToSection: false,
+                        easingcss3: "cubic-bezier(0.645, 0.045, 0.355, 1)",
+                        bigSectionsDestination : 'top',
+                        sectionSelector: '.step',
+                        anchors:['main', 'values']
+                    });
+                }.bind(this));
+
+                this.bindTo(this.goDown, 'click', function(e) {
+                    e.preventDefault();
+                    $.fn.fullpage.moveSectionDown();
+                });
+
+                this.bindTo(this.goUp, 'click', function(e) {
+                    e.preventDefault();
+                    $.fn.fullpage.moveSectionUp();
+                });
+            },
+
+            _destroyFullPageJs: function() {
+                if (!!$.fn.fullpage.destroy) {
+                    $.fn.fullpage.destroy('all');
+                }
+            }
+    
+        })
+    
+        provide(Page);
+    })
+}());
+/* end: ../../blocks/page/_view/page_view_site-touch-tables.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-contact.browser.js */
+(function(){
+(function(n){
+    if (n('.page').hasClass('page_view_site-contact')) {
+        function r() {
+            // n("#faqs-title").text("Loading...");
+            n("#faqs").empty()
+        }
+        function u() {
+            // n("#faqs-title").text("")
+        }
+        function f(t,i) {
+            // n("#faqs-title").text(t);
+            n("#faqs").empty();
+            n.each(i, function(t,i) {
+                n("#faqs").append(n("<div>").append(n("<a>").html(i.title).attr({ href : i.url, target : "_blank" })))
+            })
+        }
+        function t() {
+            typeof i != "undefined"
+                ? f("Frequently Asked Questions",i)
+                : (r(),n.getJSON("http://new.magicdesktop.com/api/faqs")
+                    .done(
+                        function(n) {
+                            n && n.length > 0 ? (i = n, t()) : u()
+                        }
+                    )
+                    .fail(u))
+        }
+
+        var i;
+
+        n(function() {
+            n("#Subject").change(function() {
+                n("#form-support").validate().element("#Subject")
+                    ? (r(),n.getJSON("http://new.magicdesktop.com/api/faqs?query="+escape(n(this).val().trim())).done(function(n){n&&n.length>0?f("Related topics",n):t()}).fail(t))
+                    :t()});
+            t();
+        })
+    }
+})(jQuery);
+
+}());
+/* end: ../../blocks/page/_view/page_view_site-contact.browser.js */
+/* begin: ../../blocks/nav-menu-burger/nav-menu-burger.browser.js */
+(function(){
+modules.define('nav-menu-burger',
+    ['i-bem__dom', 'next-tick', 'jquery'],
+    function(provide, BEMDOM, nextTick, $) {
+
+provide(BEMDOM.decl(this.name,
+{
+    onSetMod : {
+        js : {
+            inited : function() {
+                this.modal = this.findBlockInside('modal');
+                this.button = this.findBlockOn(this.elem('button'), 'checkbox-animated');
+                this.static = this.elem('static');
+                // this.modalButton = this.findBlockOn(this.elem('close'), 'checkbox-animated');
+
+                this._hackMSIE()
+
+                this.button.on(
+                    { modName : 'checked', modVal : '*'},
+                    this._onChecked,
+                    this
+                )
+                this.modal.on(
+                    { modName : 'visible', modVal : '*' },
+                    this._onModal,
+                    this
+                )
+            }
+        }
+    },
+
+    _hackMSIE : function () {
+        this._offset = this.domElem.offset();
+        var self = this;
+        var rt = ($(window).width() - (self.static.offset().left + self.static.outerWidth()));
+
+        this.static.css({
+            position : 'fixed',
+            right : rt,
+            top : this._offset.top - $(window).scrollTop(),
+        });
+
+        this.static.css({
+            position: '',
+            right : '',
+            top : ''
+        })
+    },
+
+    _onChecked : function (e, data) {
+        var val = data.modVal;
+        this._offset = this.domElem.offset();
+        var self = this;
+        var rt = ($(window).width() - (self.static.offset().left + self.static.outerWidth()));
+
+        if(val) {
+            this.static.css({
+                position : 'fixed',
+                right: rt,
+                top : this._offset.top - $(window).scrollTop(),
+            });
+        } else {
+            this.static.css({
+                position: '',
+                right : rt,
+                top : ''
+            })
+        }
+        this.modal.setMod('visible', val);
+        !!val ? $('body').css('overflow', 'visible') : $('body').css('overflow', '');
+    },
+
+    _onModal : function (e, data) {
+        var val = data.modVal;
+        var self = this;
+        this.setMod('modal', val);
+
+        self.button.setMod('checked', val)
+
+    },
+
+}));
+
+});
+
+}());
+/* end: ../../blocks/nav-menu-burger/nav-menu-burger.browser.js */
+/* begin: ../../blocks/page/_view/page_view_site-explore.browser.js */
+(function(){
+modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Page) {
+
+
+    var getScrollBarWidth = (function() {
+        var result;
+
+        return function() {
+
+            if(result != null) {
+                return result;
+            }
+
+            var scrollDiv = document.createElement("div");
+            scrollDiv.className = "scrollbar-measure";
+            document.body.appendChild(scrollDiv);
+
+            var result = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+            document.body.removeChild(scrollDiv);
+
+            return result;
+        }
+
+    }());
+
+    Page.decl({ modName : 'view', modVal : 'site-explore'}, {
+
+        onSetMod : {
+            js : {
+                inited : function() {
+                    this.__base();
+                    this._header = this.findBlockInside('header');
+                    var menu = this._header.elem('menu');
+                    this._offset = 46;
+                    this._onScroll();
+                    this.bindToDoc('scroll', this._onScroll.bind(this));
+                }
+
+            }
+        },
+        _onScroll : function() {
+            this._header.setMod('fixed', BEMDOM.doc.scrollTop() > this._offset);
+        },
+
+    })
+
+    provide(Page);
+})
+
+}());
+/* end: ../../blocks/page/_view/page_view_site-explore.browser.js */
