@@ -5561,6 +5561,9 @@ padding: 80px 40px;
     padding-bottom: 137px;
 
 }
+.header_fixed .nav-menu .menu-item_type_active .link:after {
+  background-color: black;
+}
 .header_fixed .header__inner {
   max-height: 60px;
   position: fixed;
@@ -7792,8 +7795,8 @@ padding: 80px 40px;
   margin-right: 5px;
   margin-bottom: 13px;
 }
-.footer__menu {
-  margin-top: 100px;
+.footer__menu {/* margin-top: 100px; */
+  margin-top: 50px;
   display: -ms-flexbox;
   display: flex;
   width: 100%;
@@ -8194,7 +8197,7 @@ padding: 80px 40px;
   }
 
 .section_type_main .slider__slide {
-    padding: 0px 80px;
+    padding: 0px 75px;
     padding-bottom: 20px;
   }
 }
@@ -9730,6 +9733,9 @@ padding-top: 50px;
     /* Landscape */
     /* ../../common.blocks/heading/heading.css:end */
 }
+.page_view_site-kiosk .step_type_values {
+  font-size: 16px;
+}
 /* IE 11 tablet scroll fix */
 .page_view_site-kiosk .page__header {
   position: absolute;
@@ -9743,13 +9749,23 @@ padding-top: 50px;
   width: 100%
 }
 /* Fullpage hacks */
+.page_view_site-kiosk .active .go {
+  opacity: 1;
+  transition-delay: 0.7s;
+}
+.page_view_site-kiosk .go {
+  opacity: 0;
+  transition: 0.3s;
+  transition-delay: 0s;
+}
 .page_view_site-kiosk .button {
   max-width: 100%;
   min-height: 0;
 }
 .page_view_site-kiosk .step {
   position: relative;
-  min-height: 100vh
+  min-height: 100vh;
+  padding-bottom: 0px
 }
 .page_view_site-kiosk .step_ghost {
   position: static;
@@ -9815,7 +9831,7 @@ padding-top: 50px;
 /* ************************************************************ */
 .page_view_site-kiosk .call-for-action__subtitle {
   margin-bottom: 4.125rem;
-  font-size: 1.25em;
+  font-size: 1.1em;
 }
 /* ************************************************************ */
 .page_view_site-kiosk .call-for-action__subtitle p {
@@ -10081,6 +10097,11 @@ padding-top: 50px;
     }
 @media all and (orientation: landscape) and (max-width: 1024px) {
   .page_view_site-kiosk {
+    font-size: 14px;
+  }
+    }
+@media (max-width: 1300px) {
+  .page_view_site-kiosk .step_type_values {
     font-size: 14px;
   }
     }
@@ -10501,6 +10522,7 @@ padding-top: 50px;
 }
 .page_view_site-download .page__subtitle a {
   color: #3193C5;
+  margin-right: 0.2em;
 }
 .page_view_site-download .page__info {
   font-size: 0.8181818182em;
@@ -10665,7 +10687,8 @@ padding-top: 50px;
   position: relative;
   min-height: 100vh;
   height: 100vh;
-  max-height: 100vh
+  max-height: 100vh;
+  padding-bottom: 0px
 }
 .page_view_site-preschools .step_ghost {
   position: static;
@@ -10774,7 +10797,7 @@ padding-top: 50px;
 /* ************************************************************ */
 .page_view_site-preschools .call-for-action__subtitle {
   margin-bottom: 4.125rem;
-  font-size: 1.25em;
+  font-size: 1.1em;
 }
 /* ************************************************************ */
 .page_view_site-preschools .call-for-action__subtitle p {
@@ -11302,7 +11325,8 @@ padding-top: 50px;
 }
 .page_view_site-touch-tables .step {
   position: relative;
-  min-height: 100vh
+  min-height: 100vh;
+  padding-bottom: 0px
 }
 .page_view_site-touch-tables .step_ghost {
   position: static;
@@ -11368,7 +11392,7 @@ padding-top: 50px;
 /* ************************************************************ */
 .page_view_site-touch-tables .call-for-action__subtitle {
   margin-bottom: 4.125rem;
-  font-size: 1.25em;
+  font-size: 1.1em;
 }
 /* ************************************************************ */
 .page_view_site-touch-tables .call-for-action__subtitle p {
@@ -12052,24 +12076,29 @@ padding-top: 50px;
 .page_view_site-contact .page__header .header__menu {
   color: white;
 }
-.page_view_site-contact .page__header .menu-item .link {
-  position: relative;
-}
-.page_view_site-contact .page__header .menu-item .link::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  height: 2px;
-  width: 0;
-  background-color: #fff;
-  left: 0;
-  transition: width 0.2s ease-in-out;
-}
-.page_view_site-contact .page__header .menu-item .link:hover {
-  color: white;
-}
-.page_view_site-contact .page__header .menu-item .link:hover::after, .page_view_site-contact .page__header .menu-item .link:focus::after {
-  width: 100%;
+.page_view_site-contact .page__header .menu-item {/* .link {
+                    position: relative;
+
+                    &::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -5px;
+                        height: 2px;
+                        width: 0;
+                        background-color: #fff;
+                        left: 0;
+                        transition: width 0.2s ease-in-out;
+                    }
+
+                    &:hover {
+                        color: white;
+                    }
+
+                    &:hover::after,
+                    &:focus::after {
+                        width: 100%;
+                    }
+                } */
 }
 .page_view_site-contact .page__header .menu-item_type_active .link:after {
   width: 100%;

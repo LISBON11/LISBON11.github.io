@@ -28184,9 +28184,12 @@ modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Pa
                 inited : function() {
                     this.navItems = this.elem('menu-link');
                     var navItems = this.navItems;
+                    // this.domElem.addEventListener
+
+                    this.on('scroll', function() {console.log('12312')});
 
                     $(document).ready(function() {
-                        var hash = window.location.hash;                        
+                        var hash = window.location.hash;
 
                         if (hash) {
                             var p = $(hash);
@@ -28194,7 +28197,7 @@ modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Pa
                             $('html, body').animate({
                                 scrollTop : p.offset().top - 60
                             }, '1000', 'swing');
-                            
+
                         }
                     });
 
@@ -28211,7 +28214,7 @@ modules.define('page', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $, Pa
                             $('html, body').animate({
                                 scrollTop : p.offset().top - 60
                             }, '1000', 'swing');
-                            
+
                         })
                     }.bind(this))
                 }

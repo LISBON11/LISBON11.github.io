@@ -1168,6 +1168,9 @@ svg > use {
     padding-bottom: 137px;
 
 }
+.header_fixed .nav-menu .menu-item_type_active .link:after {
+  background-color: black;
+}
 .header_fixed .header__inner {
   max-height: 60px;
   position: fixed;
@@ -1582,8 +1585,8 @@ svg > use {
   margin-right: 5px;
   margin-bottom: 13px;
 }
-.footer__menu {
-  margin-top: 100px;
+.footer__menu {/* margin-top: 100px; */
+  margin-top: 50px;
   display: -ms-flexbox;
   display: flex;
   width: 100%;
