@@ -316,6 +316,9 @@ svg > use {
 .nav-menu__link_active, .nav-menu__link:hover {
   color: #39c;
 }
+.nav-menu__link:focus {
+  outline: none;
+}
 
 .submenu {
     position: absolute;
@@ -357,10 +360,12 @@ svg > use {
   margin-bottom: 10px;
   border: 1px solid #bababa;
   padding: 10px;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   text-decoration: none;
 }
 
@@ -514,16 +519,20 @@ svg > use {
     position: absolute;
     right: 12px;
     top: 50%;
-    transform-origin: 66% 66%;
-    transform: rotate(45deg);
+    -webkit-transform-origin: 66% 66%;
+            transform-origin: 66% 66%;
+    -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
     transition: all 0.15s ease-in-out;
     width: 5px; }
   .nice-select.open:after {
-    transform: rotate(-135deg); }
+    -webkit-transform: rotate(-135deg);
+            transform: rotate(-135deg); }
   .nice-select.open .list {
     opacity: 1;
     pointer-events: auto;
-    transform: scale(1) translateY(0); }
+    -webkit-transform: scale(1) translateY(0);
+            transform: scale(1) translateY(0); }
   .nice-select.disabled {
     border-color: #ededed;
     color: #999;
@@ -563,8 +572,10 @@ svg > use {
     position: absolute;
     top: 100%;
     left: 0;
-    transform-origin: 50% 0;
-    transform: scale(0.75) translateY(-21px);
+    -webkit-transform-origin: 50% 0;
+            transform-origin: 50% 0;
+    -webkit-transform: scale(0.75) translateY(-21px);
+            transform: scale(0.75) translateY(-21px);
     transition: all 0.2s cubic-bezier(0.5, 0, 0, 1.25), opacity 0.15s ease-out;
     z-index: 9; }
     .nice-select .list:hover .option:not(:hover) {
@@ -778,6 +789,7 @@ svg > use {
     height: 215px;
     box-sizing: border-box;
     position: fixed;
+    display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
     z-index: 999;
@@ -790,9 +802,12 @@ svg > use {
     background-color: #f4f0e7;
     color: #36505e;
     box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    transition: -webkit-transform ease-out .5s;
     transition: transform ease-out .5s;
+    transition: transform ease-out .5s, -webkit-transform ease-out .5s;
     font-size: 14px;
-    transform: translate(-160px)
+    -webkit-transform: translate(-160px);
+            transform: translate(-160px)
 }
 .sticker__content {
   box-sizing: border-box;
@@ -841,12 +856,15 @@ svg > use {
   font-weight: bold;
   color: #36505e;
   text-decoration: none;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: center;
-      justify-content: center;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 .sticker__close:hover {
   cursor: pointer;
@@ -865,17 +883,22 @@ svg > use {
 }
 .sticker__side-text {
   width: 133px;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  transform: rotate(-90deg) translateX(-55px) translateY(-40px);
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-transform: rotate(-90deg) translateX(-55px) translateY(-40px);
+          transform: rotate(-90deg) translateX(-55px) translateY(-40px);
 }
 .sticker__side-text strong {
   font-size: 16px;
 }
 .sticker:hover {
-  transform: translate(0px);
+  -webkit-transform: translate(0px);
+          transform: translate(0px);
 }
 .sticker_hidden {
   display: none;
@@ -912,15 +935,18 @@ svg > use {
 
 }
 .header__nav {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: justify;
-      justify-content: space-between;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   padding: 30px 0;
   padding-right: 0;
   box-sizing: border-box;
-  -ms-flex-align: start;
-      align-items: flex-start;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
 }
 .header__inner {
   width: 100%;
@@ -1016,10 +1042,12 @@ svg > use {
 
 /* ../../blocks/international/international.post.css:begin */
 .international {
+    display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    -ms-flex-align: start;
-        align-items: flex-start;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
     color: black
 }
 .international__languages {
@@ -1044,10 +1072,12 @@ svg > use {
   margin-top: 5px;
 }
 .international__lang {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin-right: 10px;
   font-size: 18px;
 }
@@ -1058,6 +1088,16 @@ svg > use {
 .international__lang.selected {
   display: none;
 }
+.international_open_top .list {
+  -webkit-transform-origin: bottom;
+          transform-origin: bottom;
+}
+.international_open_top .nice-select.small:after {
+  display: none;
+}
+.international_open_top .current {
+  font-size: 18px !important;
+}
 /* ../../blocks/international/international.post.css:end */
 
 /* ../../blocks/checkbox-animated/checkbox-animated.post.css:begin */
@@ -1065,12 +1105,14 @@ svg > use {
     position: relative
 }
 .checkbox-animated__checkbox {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   width: 100%;
   height: 40px;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 .checkbox-animated__checkbox .checkbox__box {
   display: none;
@@ -1083,14 +1125,19 @@ svg > use {
 /* ../../blocks/section/section.post.css:begin */
 .section {
     position: relative;
+    display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    -ms-flex-direction: column;
-        flex-direction: column;
-    -ms-flex-align: center;
-        align-items: center;
-    -ms-flex-pack: center;
-        justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
     overflow: hidden;
     box-sizing: border-box;
     padding: 80px 40px;
@@ -1098,14 +1145,19 @@ svg > use {
     z-index: 2;
 }
 .section .fp-tableCell {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  -ms-flex-pack: center;
-      justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 .section.fp-table {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
@@ -1133,14 +1185,19 @@ svg > use {
   content: '';
 }
 .section__header {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-direction: row;
-      flex-direction: row;
-  -ms-flex-align: end;
-      align-items: flex-end;
-  -ms-flex-pack: justify;
-      justify-content: space-between;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
   box-sizing: border-box;
   margin-bottom: 40px;
   max-width: 1330px;
@@ -1190,8 +1247,9 @@ svg > use {
 }
 .header_fixed .header__menu {
   color: black;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin-top: 0;
   font-size: 20px;
 }
@@ -1343,9 +1401,12 @@ svg > use {
   background: rgba(50,50,50,0.2);
 }
 .modal_theme_islands, .modal_theme_islands .modal__content {
-  animation-duration: 0.2s;
-  animation-fill-mode: forwards;
-  animation-timing-function: ease-in-out;
+  -webkit-animation-duration: 0.2s;
+          animation-duration: 0.2s;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
 }
 .modal_theme_islands .modal__content {
   margin: 5px;
@@ -1356,20 +1417,39 @@ svg > use {
   display: block;
 }
 .modal_theme_islands.modal_has-animation {
-  animation-name: modal_theme_islands;
+  -webkit-animation-name: modal_theme_islands;
+          animation-name: modal_theme_islands;
 }
 .modal_theme_islands.modal_has-animation .modal__content {
-  animation-name: modal_theme_islands__content;
+  -webkit-animation-name: modal_theme_islands__content;
+          animation-name: modal_theme_islands__content;
 }
 .modal_theme_islands.modal_visible {
   visibility: visible;
   margin: 0;
 }
 .modal_theme_islands.modal_visible.modal_has-animation {
-  animation-name: modal_theme_islands_visible;
+  -webkit-animation-name: modal_theme_islands_visible;
+          animation-name: modal_theme_islands_visible;
 }
 .modal_theme_islands.modal_visible.modal_has-animation .modal__content {
-  animation-name: modal_theme_islands_visible__content;
+  -webkit-animation-name: modal_theme_islands_visible__content;
+          animation-name: modal_theme_islands_visible__content;
+}
+@-webkit-keyframes modal_theme_islands {
+  0% {
+    visibility: visible;
+    margin: 0;
+    opacity: 1;
+  }
+  99% {
+    margin: 0;
+  }
+  100% {
+    visibility: hidden;
+    margin: -9999px 0 0 -9999px;
+    opacity: 0;
+  }
 }
 @keyframes modal_theme_islands {
   0% {
@@ -1386,6 +1466,14 @@ svg > use {
     opacity: 0;
   }
 }
+@-webkit-keyframes modal_theme_islands_visible {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 @keyframes modal_theme_islands_visible {
   0% {
     opacity: 0;
@@ -1394,20 +1482,44 @@ svg > use {
     opacity: 1;
   }
 }
-@keyframes modal_theme_islands__content {
+@-webkit-keyframes modal_theme_islands__content {
   0% {
-    transform: scale(1);
+    -webkit-transform: scale(1);
+            transform: scale(1);
   }
   100% {
-    transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+  }
+}
+@keyframes modal_theme_islands__content {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  100% {
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+  }
+}
+@-webkit-keyframes modal_theme_islands_visible__content {
+  0% {
+    -webkit-transform: scale(0.75);
+            transform: scale(0.75);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
   }
 }
 @keyframes modal_theme_islands_visible__content {
   0% {
-    transform: scale(0.75);
+    -webkit-transform: scale(0.75);
+            transform: scale(0.75);
   }
   100% {
-    transform: scale(1);
+    -webkit-transform: scale(1);
+            transform: scale(1);
   }
 }
 /* ../../libs/bem-components/design/common.blocks/modal/_theme/modal_theme_islands.css:end */
@@ -1421,12 +1533,15 @@ svg > use {
 
 
 .checkbox-animated_type_cross-wings .checkbox-animated__animation {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  -ms-flex-pack: center;
-      justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   width: auto;/* width: $tcon-size; */
   height: 3px;
   outline: none;
@@ -1473,8 +1588,11 @@ svg > use {
   height: 3px;/*border-radius: $tcon-menu-radius;*/
   background: currentColor;
   content: '';
+  transition: top .3s .6s ease, -webkit-transform .3s ease;
   transition: top .3s .6s ease, transform .3s ease;
-  transform-origin: 50% 50%;
+  transition: top .3s .6s ease, transform .3s ease, -webkit-transform .3s ease;
+  -webkit-transform-origin: 50% 50%;
+          transform-origin: 50% 50%;
 }
 
 
@@ -1523,17 +1641,21 @@ svg > use {
 .checkbox-animated_type_cross-wings.checkbox-animated_checked .checkbox-animated__lines::before, .checkbox-animated_type_cross-wings.checkbox-animated_checked .checkbox-animated__lines::after {
   top: 0;
   width: 40px;
+  transition: top .3s ease, -webkit-transform .3s .5s ease;
   transition: top .3s ease, transform .3s .5s ease;
+  transition: top .3s ease, transform .3s .5s ease, -webkit-transform .3s .5s ease;
 }
 
 
 .checkbox-animated_type_cross-wings.checkbox-animated_checked .checkbox-animated__lines::before {
-  transform: rotate3d(0, 0, 1, 45deg);
+  -webkit-transform: rotate3d(0, 0, 1, 45deg);
+          transform: rotate3d(0, 0, 1, 45deg);
 }
 
 
 .checkbox-animated_type_cross-wings.checkbox-animated_checked .checkbox-animated__lines::after {
-  transform: rotate3d(0, 0, 1, -45deg);
+  -webkit-transform: rotate3d(0, 0, 1, -45deg);
+          transform: rotate3d(0, 0, 1, -45deg);
 }
 /* ../../blocks/checkbox-animated/_type/checkbox-animated_type_cross-wings.post.css:end */
 
@@ -1559,14 +1681,17 @@ svg > use {
   box-sizing: border-box;
 }
 .footer__partners {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  -ms-flex-pack: justify;
-      justify-content: space-between;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   height: 328px;
   overflow: hidden;
 }
@@ -1587,11 +1712,13 @@ svg > use {
 }
 .footer__menu {/* margin-top: 100px; */
   margin-top: 50px;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   width: 100%;
-  -ms-flex-pack: center;
-      justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   font-size: 18px;
 }
 @media screen and (max-height: 600px) {
@@ -1616,6 +1743,10 @@ svg > use {
 .footer__go {
   top: -56px;
 }
+.footer__international {
+  margin-top: -12px;
+  margin-right: 20px;
+}
 
 .page_is-ipad .footer__go {
   top: -115px;
@@ -1629,7 +1760,8 @@ svg > use {
   opacity: 1;
   top: auto;
   bottom: 0;
-  transform: rotate(0);
+  -webkit-transform: rotate(0);
+          transform: rotate(0);
   height: 45px;
 }
 
@@ -1638,7 +1770,8 @@ svg > use {
   height: 30px;
   left: 34px;
   top: 20px;
-  transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
 }
 /* ../../blocks/footer/footer.post.css:end */
 
@@ -1651,14 +1784,19 @@ svg > use {
   min-width: 100vw;
   min-height: 100vh;
   padding: 40px;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  -ms-flex-pack: center;
-      justify-content: center;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   -ms-flex-line-pack: center;
       align-content: center;
   box-sizing: border-box;
@@ -1697,6 +1835,7 @@ svg > use {
 }
 .nav-menu-burger__static {
   overflow: hidden;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
@@ -1711,6 +1850,7 @@ svg > use {
   opacity: 0;
 }
 .nav-menu-burger__button, .nav-menu-burger__close {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   background: none;
@@ -1726,10 +1866,12 @@ svg > use {
   height: 36px;
 }
 .nav-menu-burger__head {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: end;
-      justify-content: flex-end;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
 }
 .nav-menu-burger__modal {
   background-image: url('/assets/images/common/bg.jpg');
@@ -1752,14 +1894,18 @@ svg > use {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
-      align-items: center;
-  -ms-flex-pack: center;
-      justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 .nav-menu-burger__thumbnail {
+  display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
   vertical-align: middle;
@@ -1767,10 +1913,12 @@ svg > use {
   height: 3.7em;
   border: 2px solid transparent;
   border-radius: 50%;
-  -ms-flex-pack: center;
-      justify-content: center;
-  -ms-flex-align: center;
-      align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   margin-right: 30px;
   transition: 0.3s background-color ease-in,
                     0.3s border-color ease-in;
@@ -1797,6 +1945,7 @@ svg > use {
   transition: width 0.2s ease-in-out;
 }
 .nav-menu-burger__main-links {
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   padding-left: 100px;
@@ -1851,9 +2000,12 @@ svg > use {
   width: calc(100% - 25px);
 }
 .nav-menu-burger__additional {
-  -ms-flex-flow: row wrap;
-      flex-flow: row wrap;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
   max-height: 23rem;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   margin-bottom: 150px;
@@ -1941,10 +2093,12 @@ svg > use {
 @media screen and (max-width: 600px) {
 
     .nav-menu-burger__head {
-        -ms-flex-align: center;
-            align-items: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+        -webkit-box-align: center;
+            -ms-flex-align: center;
+                align-items: center;
+        -webkit-box-pack: center;
+            -ms-flex-pack: center;
+                justify-content: center;
     }
 
     .nav-menu-burger__modal {
@@ -1959,8 +2113,10 @@ svg > use {
     }
 
     .nav-menu-burger__additional {
-        -ms-flex-direction: column;
-            flex-direction: column;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+                flex-direction: column;
         max-height: 100%;
         margin-bottom: 60px;
     }
@@ -2036,6 +2192,7 @@ svg > use {
   margin-right: auto;
   padding-left: 40px;
   padding-right: 40px;
+  display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }

@@ -14545,14 +14545,16 @@ provide(BEMDOM.decl(this.name,
         var parsedUrl = url.split(origin)[1].split('#')[0];
 
         this.menuItems.forEach(function(item) {
-            var itemLink = item.findBlockInside('link').domElem.attr('href');
+            var itemLink = item.findBlockInside('link');
+            var href = itemLink.domElem.attr('href') || itemLink.domElem.attr('itemUrl');
 
-            if(parsedUrl == itemLink)
+            if(parsedUrl == href)
                 item.setMod('type', 'active')
 
             console.log('parsedUrl', parsedUrl)
+            console.log('Final href ->', href);
             console.log('itemUrl', item.params.itemUrl);
-            console.log('itemLink', itemLink);
+            console.log('href', itemLink.domElem.attr('href'), 'itemUrl', itemLink.domElem.attr('itemUrl'))
             console.log('----')
         })
     },
@@ -16569,6 +16571,14 @@ provide(BEMDOM.decl(this.name, {
 
                 var niceSelect = $('.nice-select');
                 var options$ = niceSelect.find('.option');
+
+                if(this.hasMod("open", "top")) {
+                    var list = this.findBlockInside("list");
+                    
+                    console.log('test', )
+
+                    list.domElem.css({top: "-" + list.domElem.height() + "px"});
+                }
 
                 options$.each(function(index, item) {
                     var option$ = $(item);
